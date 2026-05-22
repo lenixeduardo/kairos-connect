@@ -43,7 +43,7 @@ const TopNav = () => {
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 bg-primary shadow-[0_0_8px_rgba(0,255,157,0.8)]" />
           <span className="text-sm font-black tracking-tighter uppercase font-heading">
-            KairOS <span className="text-primary/80">CONNECT</span>
+            KairOS <span className="text-primary/80">Portus</span>
           </span>
         </div>
       </div>

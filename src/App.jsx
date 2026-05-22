@@ -245,7 +245,7 @@ function Toolbar({ recording, onToggleRecord, isMobile, onMenuOpen }) {
         </button>
       )}
       <div style={{ color: "#fff", padding: "0 14px", display: "flex", alignItems: "center", fontWeight: "bold", fontSize: isMobile ? 11 : 13, letterSpacing: 1.5 }}>
-        KairOS <span style={{ color: "#00ff9d", marginLeft: 4 }}>CONNECT</span>
+        KairOS <span style={{ color: "#00ff9d", marginLeft: 4 }}>Portus</span>
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ display: "flex", alignItems: "center", padding: "0 12px" }}>
@@ -639,7 +639,7 @@ function ConfigurationPage({ instruments, params, onChangeParams, isMobile }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {filtered.map(p => (
                 <div key={p.key} style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: 6, padding: "10px 12px" }}>
-                  <div style={{ display: "flex", justifycontent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <span style={{ fontFamily: "monospace", fontWeight: 700, fontSize: 13, color: "#fff" }}>{p.key}</span>
                       <span style={{ fontSize: 10, color: "#888", marginLeft: 8 }}>{p.label}</span>
@@ -1273,7 +1273,7 @@ export default function KairOSPortus() {
     return <HeroLanding onEnter={() => setCurrentScreen("login")} />;
   }
 
-  if (currentScreen === "login") {
+  if (currentScreen === "login" || !isAuthenticated) {
     return (
       <KairosLogin
         onLogin={() => {
@@ -1313,7 +1313,7 @@ export default function KairOSPortus() {
       <Toolbar recording={recording} onToggleRecord={() => setRecording(r => !r)} isMobile={isMobile} onMenuOpen={() => setMenuOpen(true)} />
 
       {isMobile && (
-        <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS CONNECT">
+        <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS Portus">
           <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: 1 }}>
               {NAV_TABS.map(t => (

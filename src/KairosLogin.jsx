@@ -79,7 +79,7 @@ const LeftPanel = () => (
       <div className="flex items-center gap-3 mb-3">
         <div className="w-4 h-4 shrink-0" style={{ background: '#00FF9D' }} aria-hidden="true" />
         <span className="text-white font-bold text-2xl tracking-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
-          KairOS <span className="text-[#00FF9D]">CONNECT</span>
+          KairOS <span className="text-[#00FF9D]">Portus</span>
         </span>
       </div>
       <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: '#6b7a72', fontFamily: 'monospace' }}>
