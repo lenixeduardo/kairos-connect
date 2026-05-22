@@ -79,7 +79,7 @@ const LeftPanel = () => (
       <div className="flex items-center gap-3 mb-3">
         <div className="w-4 h-4 shrink-0" style={{ background: '#00FF9D' }} aria-hidden="true" />
         <span className="text-white font-bold text-2xl tracking-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
-          KairOS <span className="text-[#00FF9D]">Portus</span>
+          KairOS <span className="text-[#00FF9D]">CONNECT</span>
         </span>
       </div>
       <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: '#6b7a72', fontFamily: 'monospace' }}>
@@ -113,7 +113,7 @@ const RightPanel = ({ onLogin }) => {
     setError('');
 
     // Precomputed SHA-256 hashes of standard credentials to avoid plaintext compilation leaks
-    const targetEmailHash = "24036f0490c6fe29bbfd21eb1997d91e3d0d8beebcf35f088198f645318db9e5"; // admin@admin.com
+    const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326"; // admin@admin.com
     const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // admin
 
     // Helper to compute SHA-256 hash in browser using standard Web Crypto API
