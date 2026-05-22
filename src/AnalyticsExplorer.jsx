@@ -236,7 +236,7 @@ export const AnalyticsExplorer = ({ activeTab, onTab, alarmCount, onLogout, chil
                     {filteredLogs.map((log, index) => (
                       <tr key={index} className={cn("group hover:bg-primary/5 transition-colors border-b border-white/5", index % 2 === 0 ? "bg-white/[0.01]" : "bg-transparent")}>
                         <td className="py-4 px-4 text-[11px] text-primary/80 group-hover:text-primary transition-colors">
-                          {log.timestamp}
+                          {log.timestamp.replace(/^(\d{4})-(\d{2})-(\d{2})/, '$3/$2/$1')}
                         </td>
                         <td className="py-4 px-4 text-[11px]">
                           <span className={cn(
