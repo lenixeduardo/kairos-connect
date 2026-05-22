@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
+import { KairosLogin } from "./KairosLogin";
+import { HeroLanding } from "./HeroLanding";
+import { AppSidebar } from "./AppSidebar";
+import { AnalyticsExplorer } from "./AnalyticsExplorer";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const INSTRUMENTS = [
@@ -294,24 +298,7 @@ function BottomNav({ activeTab, onTab }) {
   );
 }
 
-// ─── DESKTOP SIDE NAV ────────────────────────────────────────────────────────
-function SideNav({ activeTab, onTab }) {
-  return (
-    <div style={{ width: 48, background: "#1a1a1a", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 8, flexShrink: 0 }}>
-      {NAV_TABS.map(t => (
-        <button key={t.id} onClick={() => onTab(t.id)} title={t.label} style={{
-          width: 40, height: 40, border: "none", cursor: "pointer", borderRadius: 6,
-          background: activeTab === t.id ? RED : "transparent",
-          color: activeTab === t.id ? "#fff" : "#888",
-          fontSize: 16, marginBottom: 4, display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "all 0.15s",
-        }}>
-          {t.icon}
-        </button>
-      ))}
-    </div>
-  );
-}
+
 
 // ─── STATUS BAR ──────────────────────────────────────────────────────────────
 function StatusBar({ instruments }) {
@@ -879,6 +866,7 @@ function ReportsPage({ instruments, chartData, isMobile }) {
 // ─── APP ─────────────────────────────────────────────────────────────────────
 export default function KairOSConnect() {
   const isMobile = useIsMobile();
+  const [currentScreen, setCurrentScreen] = useState("hero"); // "hero", "login", "dashboard"
   const [activeTab, setActiveTab]   = useState("dashboard");
   const [selectedId, setSelectedId] = useState(INSTRUMENTS[0].id);
   const [recording, setRecording]   = useState(false);
@@ -944,6 +932,22 @@ export default function KairOSConnect() {
     reports:       <ReportsPage {...sharedProps} instruments={INSTRUMENTS} chartData={chartData} />,
   };
 
+  if (currentScreen === "hero") {
+    return <HeroLanding onEnter={() => setCurrentScreen("login")} />;
+  }
+
+  if (currentScreen === "login") {
+    return <KairosLogin onLogin={() => setCurrentScreen("dashboard")} />;
+  }
+
+  if (!isMobile) {
+    return (
+      <AnalyticsExplorer activeTab={activeTab} onTab={setActiveTab}>
+        {pages[activeTab]}
+      </AnalyticsExplorer>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "'Segoe UI', Arial, sans-serif", background: "#f5f5f5", overflow: "hidden" }}>
       <Toolbar recording={recording} onToggleRecord={() => setRecording(r => !r)} isMobile={isMobile} onMenuOpen={() => setMenuOpen(true)} />
@@ -951,7 +955,6 @@ export default function KairOSConnect() {
       {isMobile && <MobileMenu />}
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-        {!isMobile && <SideNav activeTab={activeTab} onTab={setActiveTab} />}
         <div style={{ flex: 1, overflow: "hidden", background: "#fff" }}>
           {pages[activeTab]}
         </div>
