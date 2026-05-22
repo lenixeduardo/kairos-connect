@@ -1016,7 +1016,7 @@ function ReportsPage({ instruments, chartData, isMobile }) {
 }
 
 // ─── APP ─────────────────────────────────────────────────────────────────────
-export default function KairOSConnect() {
+export default function KairOSPortus() {
   const isMobile = useIsMobile();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     if (typeof window !== "undefined") {
@@ -1233,7 +1233,25 @@ export default function KairOSConnect() {
       setEvents(newEvents);
     }, 3000);
     return () => clearInterval(id);
-  }, [recording, simulationMode]);
+  }, [recording]);
+
+  const MobileMenu = () => (
+    <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS Portus">
+      {NAV_TABS.map(t => (
+        <button key={t.id} onClick={() => { setActiveTab(t.id); setMenuOpen(false); }} style={{
+          display: "flex", alignItems: "center", gap: 12, width: "100%",
+          padding: "13px 16px", border: "none", borderBottom: "1px solid #f0f0f0",
+          background: activeTab === t.id ? "#fff5f5" : "#fff",
+          borderLeft: activeTab === t.id ? `4px solid ${RED}` : "4px solid transparent",
+          color: activeTab === t.id ? RED : "#333", fontSize: 13, fontWeight: activeTab === t.id ? 700 : 400,
+          cursor: "pointer", textAlign: "left",
+        }}>
+          <span style={{ fontSize: 18 }}>{t.icon}</span>
+          {t.label}
+        </button>
+      ))}
+    </Drawer>
+  );
 
   const sharedProps = { isMobile };
   const pages = {
