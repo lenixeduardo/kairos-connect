@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Fingerprint, Sparkles, ArrowUpRight, Play, Activity, Cpu, Database, Layers } from 'lucide-react';
+import { Fingerprint, Sparkles, Play, Activity, Cpu, Database, Layers } from 'lucide-react';
 import { ParameterGrid } from './ParameterGrid';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +36,7 @@ const FloatingParameterChip = ({
 /**
  * Navigation Component
  */
-const TopNav = ({ onEnter }) => {
+const TopNav = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md">
       <div className="flex items-center gap-8">
@@ -46,32 +46,6 @@ const TopNav = ({ onEnter }) => {
             KairOS <span className="text-primary/80">CONNECT</span>
           </span>
         </div>
-        
-        <div className="hidden md:flex items-center gap-6">
-          {['Plataforma', 'Instrumentos', 'Monitoramento', 'Analíticos'].map(link => (
-            <a key={link} href="#" className="text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-white transition-colors">
-              {link}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="hidden lg:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mr-4">
-          <span>Para Indústrias</span>
-          <ArrowUpRight size={12} />
-        </div>
-        
-        <button className="hidden sm:flex px-4 py-1.5 border border-white/20 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all rounded-sm cursor-pointer">
-          Watch A Demo
-        </button>
-        
-        <button
-          onClick={onEnter}
-          className="px-5 py-1.5 bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 shadow-[0_0_15px_rgba(0,255,157,0.3)] transition-all rounded-sm cursor-pointer"
-        >
-          Join Us
-        </button>
       </div>
     </nav>
   );
@@ -101,7 +75,7 @@ export const HeroLanding = ({ onEnter }) => {
         <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
       </div>
 
-      <TopNav onEnter={onEnter} />
+      <TopNav />
 
       {/* Decorative Chips */}
       {floatingChips.map(chip => (
