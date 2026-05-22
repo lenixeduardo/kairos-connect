@@ -245,7 +245,7 @@ function Toolbar({ recording, onToggleRecord, isMobile, onMenuOpen }) {
         </button>
       )}
       <div style={{ color: "#fff", padding: "0 14px", display: "flex", alignItems: "center", fontWeight: "bold", fontSize: isMobile ? 11 : 13, letterSpacing: 1.5 }}>
-        KairOS <span style={{ color: "#00ff9d", marginLeft: 4 }}>Portus</span>
+        KairOS <span style={{ color: "#00ff9d", marginLeft: 4 }}>CONNECT</span>
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ display: "flex", alignItems: "center", padding: "0 12px" }}>
@@ -1019,7 +1019,7 @@ function ReportsPage({ instruments, chartData, isMobile }) {
 }
 
 // ─── APP ─────────────────────────────────────────────────────────────────────
-export default function KairOSPortus() {
+export default function KairOSConnect() {
   const isMobile = useIsMobile();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     if (typeof window !== "undefined") {
@@ -1239,7 +1239,7 @@ export default function KairOSPortus() {
   }, [recording]);
 
   const MobileMenu = () => (
-    <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS Portus">
+    <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS CONNECT">
       {NAV_TABS.map(t => (
         <button key={t.id} onClick={() => { setActiveTab(t.id); setMenuOpen(false); }} style={{
           display: "flex", alignItems: "center", gap: 12, width: "100%",
@@ -1313,7 +1313,7 @@ export default function KairOSPortus() {
       <Toolbar recording={recording} onToggleRecord={() => setRecording(r => !r)} isMobile={isMobile} onMenuOpen={() => setMenuOpen(true)} />
 
       {isMobile && (
-        <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS Portus">
+        <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS CONNECT">
           <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: 1 }}>
               {NAV_TABS.map(t => (
