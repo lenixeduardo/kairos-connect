@@ -1,3 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00ff9d;
+  --color-accent: #00e5ff;
+  --font-heading: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --color-muted-foreground: #6b7a72;
+  --color-foreground: #ffffff;
+  --color-destructive: #ef4444;
+}
+
+/* Custom CSS utilities for KairOS Connect landing screen */
+
+/* Monospace font class */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+/* Industrial grid background */
+.industrial-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* CRT Scanline effect */
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.3)
+  );
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+/* Dark theme overrides for inline-styled panels */
+main.flex-1 {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+main.flex-1 div, 
+main.flex-1 td, 
+main.flex-1 th,
+main.flex-1 table,
+main.flex-1 input,
+main.flex-1 button,
+main.flex-1 span,
+main.flex-1 section {
+  background-color: transparent; 
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Specific elements that need styling overrides */
+main.flex-1 input[type="number"] {
+  background-color: #111111 !important;
+  border: 1px solid rgba(0, 255, 157, 0.3) !important;
+  color: #00ff9d !important;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+main.flex-1 table {
+  border-collapse: collapse;
+}
+
+main.flex-1 thead tr {
+  background-color: rgba(0, 255, 157, 0.05) !important;
+}
+
+main.flex-1 thead th {
+  color: #00ff9d !important;
+  font-weight: bold;
+}
+
+main.flex-1 tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+main.flex-1 tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.01) !important;
+}
+
+main.flex-1 tbody tr:hover {
+  background-color: rgba(0, 255, 157, 0.04) !important;
+}
+
+/* Badges and statuses */
+main.flex-1 span[style*="background: rgb(232, 245, 233)"] {
+  background-color: rgba(0, 255, 157, 0.1) !important;
+  color: #00ff9d !important;
+  border: 1px solid rgba(0, 255, 157, 0.2) !important;
+}
+
+main.flex-1 span[style*="background: rgb(254, 243, 199)"],
+main.flex-1 span[style*="background: rgb(255, 248, 225)"] {
+  background-color: rgba(255, 229, 0, 0.1) !important;
+  color: #ffe500 !important;
+  border: 1px solid rgba(255, 229, 0, 0.2) !important;
+}
+
+main.flex-1 span[style*="background: rgb(254, 226, 226)"],
+main.flex-1 span[style*="background: rgb(255, 235, 235)"] {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
 * {
   box-sizing: border-box;
 }
