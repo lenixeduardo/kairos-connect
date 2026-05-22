@@ -53,7 +53,7 @@ export const AppSidebar = ({
         </div>
         <div>
           <h1 className="text-white font-bold tracking-tighter text-lg leading-none">KAIROS</h1>
-          <span className="text-[10px] text-primary/70 tracking-[0.2em] mono uppercase">Connect v2.4</span>
+          <span className="text-[10px] text-primary/70 tracking-[0.2em] mono uppercase">Portus v2.4</span>
         </div>
       </div>
 
