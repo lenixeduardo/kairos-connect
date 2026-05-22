@@ -191,13 +191,13 @@ export const HeroLanding = ({ onEnter }) => {
         <div className="absolute bottom-[-10%] left-[-5%] w-[320px] opacity-20 rotate-[5deg] group-hover:opacity-30 transition-opacity duration-700 hidden xl:block pointer-events-none">
           <div className="glass-panel p-6 border-white/5 space-y-4 text-left">
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="text-[10px] mono text-gray-500">NETWORK STATUS</span>
+              <span className="text-[10px] mono text-gray-500">STATUS DA REDE</span>
               <div className="w-2 h-2 bg-primary rounded-full" />
             </div>
             {[
-              { icon: Cpu, label: "Core Temp", val: "42°C" },
-              { icon: Database, label: "IO Throughput", val: "1.2GB/s" },
-              { icon: Layers, label: "Stack Sync", val: "0.01ms" }
+              { icon: Cpu, label: "Temp. Core", val: "42°C" },
+              { icon: Database, label: "Taxa E/S", val: "1.2GB/s" },
+              { icon: Layers, label: "Sync Stack", val: "0.01ms" }
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

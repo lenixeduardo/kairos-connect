@@ -34,15 +34,15 @@ export const AppSidebar = ({
   alarmCount = 0,
   onLogout
 }) => {
-  let activeLabel = 'Dashboard';
-  if (activeTab === 'analytics') activeLabel = 'Analytics';
-  if (activeTab === 'alarms') activeLabel = 'Alarms';
-  if (activeTab === 'datalog') activeLabel = 'Logs';
-  if (activeTab === 'configuration') activeLabel = 'Config';
-  if (activeTab === 'instruments') activeLabel = 'Instruments';
-  if (activeTab === 'calibration') activeLabel = 'Calibration';
-  if (activeTab === 'templates') activeLabel = 'Templates';
-  if (activeTab === 'reports') activeLabel = 'Reports';
+  let activeLabel = 'Painel';
+  if (activeTab === 'analytics') activeLabel = 'Análise';
+  if (activeTab === 'alarms') activeLabel = 'Alarmes';
+  if (activeTab === 'datalog') activeLabel = 'Registros';
+  if (activeTab === 'configuration') activeLabel = 'Configuração';
+  if (activeTab === 'instruments') activeLabel = 'Instrumentos';
+  if (activeTab === 'calibration') activeLabel = 'Calibração';
+  if (activeTab === 'templates') activeLabel = 'Modelos';
+  if (activeTab === 'reports') activeLabel = 'Relatórios';
 
   return (
     <aside className="w-64 h-screen bg-surface border-r border-white/5 flex flex-col glass-panel sticky top-0 shrink-0">
@@ -60,65 +60,65 @@ export const AppSidebar = ({
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
         <div className="px-4 mb-2 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
-          Main Console
+          Console Principal
         </div>
         <SidebarItem
           icon={<LayoutDashboard size={20} />}
-          label="Dashboard"
-          active={activeLabel === 'Dashboard'}
+          label="Painel"
+          active={activeLabel === 'Painel'}
           onClick={() => onTab?.('dashboard')}
         />
         <SidebarItem
           icon={<Activity size={20} />}
-          label="Analytics"
-          active={activeLabel === 'Analytics'}
+          label="Análise"
+          active={activeLabel === 'Análise'}
           onClick={() => onTab?.('analytics')}
         />
         <SidebarItem
           icon={<ShieldAlert size={20} />}
-          label="Alarms"
-          active={activeLabel === 'Alarms'}
+          label="Alarmes"
+          active={activeLabel === 'Alarmes'}
           alert={alarmCount}
           onClick={() => onTab?.('alarms')}
         />
         <SidebarItem
           icon={<Terminal size={20} />}
-          label="Logs"
-          active={activeLabel === 'Logs'}
+          label="Registros"
+          active={activeLabel === 'Registros'}
           onClick={() => onTab?.('datalog')}
         />
         <SidebarItem
           icon={<BarChart3 size={20} />}
-          label="Reports"
-          active={activeLabel === 'Reports'}
+          label="Relatórios"
+          active={activeLabel === 'Relatórios'}
           onClick={() => onTab?.('reports')}
         />
 
         <div className="mt-8 px-4 mb-2 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
-          System
+          Sistema
         </div>
         <SidebarItem
           icon={<List size={20} />}
-          label="Instruments"
-          active={activeLabel === 'Instruments'}
+          label="Instrumentos"
+          active={activeLabel === 'Instrumentos'}
           onClick={() => onTab?.('instruments')}
         />
         <SidebarItem
           icon={<Settings size={20} />}
-          label="Config"
-          active={activeLabel === 'Config'}
+          label="Configuração"
+          active={activeLabel === 'Configuração'}
           onClick={() => onTab?.('configuration')}
         />
         <SidebarItem
           icon={<Sliders size={20} />}
-          label="Calibration"
-          active={activeLabel === 'Calibration'}
+          label="Calibração"
+          active={activeLabel === 'Calibração'}
           onClick={() => onTab?.('calibration')}
         />
         <SidebarItem
           icon={<Layout size={20} />}
-          label="Templates"
-          active={activeLabel === 'Templates'}
+          label="Modelos"
+          active={activeLabel === 'Modelos'}
           onClick={() => onTab?.('templates')}
         />
       </nav>
@@ -129,7 +129,7 @@ export const AppSidebar = ({
           <div className="relative">
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#00ff9d]" />
           </div>
-          <span className="text-[10px] text-gray-400 mono">NODE-ALPHA: CONNECTED</span>
+          <span className="text-[10px] text-gray-400 mono">NODE-ALPHA: CONECTADO</span>
         </div>
 
         <button
@@ -137,7 +137,7 @@ export const AppSidebar = ({
           className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:text-white transition-colors cursor-pointer"
         >
           <LogOut size={14} />
-          <span>EXIT SESSION</span>
+          <span>ENCERRAR SESSÃO</span>
         </button>
       </div>
     </aside>

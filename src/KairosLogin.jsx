@@ -234,7 +234,7 @@ const RightPanel = ({ onLogin }) => {
               onClick={() => setShowPassword(p => !p)}
               className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
               style={{ color: '#4a5050' }}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
               onMouseEnter={e => e.currentTarget.style.color = '#00FF9D'}
               onMouseLeave={e => e.currentTarget.style.color = '#4a5050'}
             >
