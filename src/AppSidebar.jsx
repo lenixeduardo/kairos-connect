@@ -1,12 +1,8 @@
-import * as React from 'react';
 import {
   LayoutDashboard,
   Activity,
-  Settings,
   Bell,
   Database,
-  Shield,
-  Zap,
   Sliders,
   Target,
   Clipboard,

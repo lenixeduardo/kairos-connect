@@ -4,7 +4,6 @@ import {
 } from "recharts";
 import { KairosLogin } from "./KairosLogin";
 import { HeroLanding } from "./HeroLanding";
-import { AppSidebar } from "./AppSidebar";
 import { AnalyticsExplorer } from "./AnalyticsExplorer";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
@@ -903,24 +902,6 @@ export default function KairOSConnect() {
     return () => clearInterval(id);
   }, [recording]);
 
-  const MobileMenu = () => (
-    <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS CONNECT">
-      {NAV_TABS.map(t => (
-        <button key={t.id} onClick={() => { setActiveTab(t.id); setMenuOpen(false); }} style={{
-          display: "flex", alignItems: "center", gap: 12, width: "100%",
-          padding: "13px 16px", border: "none", borderBottom: "1px solid #f0f0f0",
-          background: activeTab === t.id ? "#fff5f5" : "#fff",
-          borderLeft: activeTab === t.id ? `4px solid ${RED}` : "4px solid transparent",
-          color: activeTab === t.id ? RED : "#333", fontSize: 13, fontWeight: activeTab === t.id ? 700 : 400,
-          cursor: "pointer", textAlign: "left",
-        }}>
-          <span style={{ fontSize: 18 }}>{t.icon}</span>
-          {t.label}
-        </button>
-      ))}
-    </Drawer>
-  );
-
   const sharedProps = { isMobile };
   const pages = {
     dashboard:     <Dashboard {...sharedProps} instruments={INSTRUMENTS} chartData={chartData} selectedId={selectedId} onSelect={setSelectedId} />,
@@ -952,7 +933,23 @@ export default function KairOSConnect() {
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "'Segoe UI', Arial, sans-serif", background: "#f5f5f5", overflow: "hidden" }}>
       <Toolbar recording={recording} onToggleRecord={() => setRecording(r => !r)} isMobile={isMobile} onMenuOpen={() => setMenuOpen(true)} />
 
-      {isMobile && <MobileMenu />}
+      {isMobile && (
+        <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title="KairOS CONNECT">
+          {NAV_TABS.map(t => (
+            <button key={t.id} onClick={() => { setActiveTab(t.id); setMenuOpen(false); }} style={{
+              display: "flex", alignItems: "center", gap: 12, width: "100%",
+              padding: "13px 16px", border: "none", borderBottom: "1px solid #f0f0f0",
+              background: activeTab === t.id ? "#fff5f5" : "#fff",
+              borderLeft: activeTab === t.id ? `4px solid ${RED}` : "4px solid transparent",
+              color: activeTab === t.id ? RED : "#333", fontSize: 13, fontWeight: activeTab === t.id ? 700 : 400,
+              cursor: "pointer", textAlign: "left",
+            }}>
+              <span style={{ fontSize: 18 }}>{t.icon}</span>
+              {t.label}
+            </button>
+          ))}
+        </Drawer>
+      )}
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         <div style={{ flex: 1, overflow: "hidden", background: "#fff" }}>

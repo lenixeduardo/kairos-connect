@@ -90,11 +90,21 @@ const LeftPanel = () => (
 );
 
 const RightPanel = ({ onLogin }) => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError('');
+
+    if (email !== 'admin@admin.com' || password !== 'admin') {
+      setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
+      return;
+    }
+
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -116,9 +126,16 @@ const RightPanel = ({ onLogin }) => {
         </h1>
 
         {/* Subtext */}
-        <p className="text-sm mb-9" style={{ color: '#5a6060' }}>
+        <p className="text-sm mb-6" style={{ color: '#5a6060' }}>
           Entre com suas credenciais para acessar.
         </p>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-4 p-3 rounded-sm text-xs font-mono border border-destructive/30 bg-destructive/10 text-destructive shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -126,6 +143,8 @@ const RightPanel = ({ onLogin }) => {
           <div>
             <input
               type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               placeholder="operador@kairos.ind"
               autoComplete="email"
               required
@@ -149,6 +168,8 @@ const RightPanel = ({ onLogin }) => {
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete="current-password"
               required

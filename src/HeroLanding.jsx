@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import { motion } from 'framer-motion';
 import { Fingerprint, Sparkles, ArrowUpRight, Play, Activity, Cpu, Database, Layers } from 'lucide-react';
 import { ParameterGrid } from './ParameterGrid';
