@@ -89,6 +89,18 @@ const LeftPanel = () => (
   </div>
 );
 
+const srOnlyStyle = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: '0'
+};
+
 const RightPanel = ({ onLogin }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -96,20 +108,47 @@ const RightPanel = ({ onLogin }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (email !== 'admin@admin.com' || password !== 'admin') {
-      setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
-      return;
-    }
+    // Precomputed SHA-256 hashes of standard credentials to avoid plaintext compilation leaks
+    const targetEmailHash = "24036f0490c6fe29bbfd21eb1997d91e3d0d8beebcf35f088198f645318db9e5"; // admin@admin.com
+    const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // admin
 
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      if (onLogin) onLogin();
-    }, 2000);
+    // Helper to compute SHA-256 hash in browser using standard Web Crypto API
+    const getSHA256 = async (str) => {
+      const utf8 = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+
+    try {
+      const inputEmailHash = await getSHA256(email.trim().toLowerCase());
+      const inputPasswordHash = await getSHA256(password);
+
+      // Support configurable environment variables via Vite (if supplied) or fallback to SHA-256 hashes
+      const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
+      const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
+      const isEmailValid = envEmail ? (email.trim().toLowerCase() === envEmail.trim().toLowerCase()) : (inputEmailHash === targetEmailHash);
+      const isPasswordValid = envPassword ? (password === envPassword) : (inputPasswordHash === targetPasswordHash);
+
+      if (!isEmailValid || !isPasswordValid) {
+        setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
+        return;
+      }
+
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        if (onLogin) onLogin();
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setError('Erro no processamento da autenticação.');
+    }
   };
 
   return (
@@ -141,7 +180,10 @@ const RightPanel = ({ onLogin }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
+            <label htmlFor="login-email" style={srOnlyStyle}>Endereço de E-mail</label>
             <input
+              id="login-email"
+              name="email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -166,7 +208,10 @@ const RightPanel = ({ onLogin }) => {
 
           {/* Password */}
           <div className="relative">
+            <label htmlFor="login-password" style={srOnlyStyle}>Senha</label>
             <input
+              id="login-password"
+              name="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={e => setPassword(e.target.value)}

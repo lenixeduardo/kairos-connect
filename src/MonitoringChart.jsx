@@ -14,7 +14,7 @@ export const MonitoringChart = ({ title, type, data, height = 300 }) => {
       </div>
 
       <div style={{ width: '100%', height }}>
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
           <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
             <XAxis 

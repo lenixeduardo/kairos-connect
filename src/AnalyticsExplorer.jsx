@@ -1,8 +1,21 @@
 import * as React from 'react';
-import { Download, Calendar, History as HistoryIcon, Search } from 'lucide-react';
+import { Download, Calendar, Filter, ChevronDown, Search, History as HistoryIcon } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { MonitoringChart } from './MonitoringChart';
 import { cn } from '@/lib/utils';
+
+const srOnlyStyle = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: '0'
+};
+
 
 // Mock Data for Charts
 const chartData = Array.from({
@@ -53,28 +66,59 @@ const eventLogs = [{
   description: 'Reinicialização completa do sistema'
 }];
 
-export const AnalyticsExplorer = ({ activeTab, onTab, children }) => {
+export const AnalyticsExplorer = ({ activeTab, onTab, alarmCount, onLogout, children }) => {
   const [dateFrom, setDateFrom] = React.useState('2024-05-20');
   const [dateTo, setDateTo] = React.useState('2024-05-20');
   const [filterText, setFilterText] = React.useState('');
+  const [selectedInstrument, setSelectedInstrument] = React.useState('ALL');
 
-  const filteredLogs = eventLogs.filter(log => 
-    log.type.toLowerCase().includes(filterText.toLowerCase()) ||
-    log.instrument.toLowerCase().includes(filterText.toLowerCase()) ||
-    log.description.toLowerCase().includes(filterText.toLowerCase())
-  );
+  const filteredLogs = eventLogs.filter(log => {
+    const logDate = log.timestamp.split(' ')[0];
+    const isWithinDateRange = (!dateFrom || logDate >= dateFrom) && (!dateTo || logDate <= dateTo);
+    const matchesInstrument = selectedInstrument === 'ALL' || log.instrument === selectedInstrument;
+    const searchLower = filterText.toLowerCase();
+    const matchesSearch = 
+      log.type.toLowerCase().includes(searchLower) ||
+      log.instrument.toLowerCase().includes(searchLower) ||
+      log.description.toLowerCase().includes(searchLower);
+    return isWithinDateRange && matchesInstrument && matchesSearch;
+  });
+
+  const handleExportCSV = () => {
+    const headers = ['Timestamp', 'Tipo', 'Instrumento', 'Descrição'];
+    const rows = filteredLogs.map(log => [
+      log.timestamp,
+      log.type,
+      log.instrument,
+      log.description
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `event_logs_${dateFrom}_to_${dateTo}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="min-h-screen bg-black flex font-body selection:bg-primary/30 selection:text-white">
       {/* Sidebar Overlay for Scanlines */}
       <div className="fixed inset-0 pointer-events-none z-[60]">
-        <div className="scanline" style={{ opacity: 0.02 }} />
+        <div className="scanline" style={{
+          opacity: 0.02
+        }} />
       </div>
 
-      <AppSidebar activeTab={activeTab} onTab={onTab} />
+      <AppSidebar activeTab={activeTab} onTab={onTab} alarmCount={alarmCount} onLogout={onLogout} />
 
       <main className="flex-1 p-8 space-y-8 overflow-y-auto min-w-0">
-        {activeTab === 'dashboard' ? (
+        {activeTab === 'analytics' ? (
           <>
             {/* Header Section */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -89,32 +133,39 @@ export const AnalyticsExplorer = ({ activeTab, onTab, children }) => {
 
               <div className="flex flex-wrap items-center gap-4 bg-white/5 p-4 rounded-sm border border-white/5 backdrop-blur-sm">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase tracking-widest text-muted-foreground font-mono px-1">De</label>
+                  <label htmlFor="analytics-date-from" className="text-[9px] uppercase tracking-widest text-muted-foreground font-mono px-1">De</label>
                   <div className="relative group">
-                    <input 
-                      type="date" 
-                      value={dateFrom} 
-                      onChange={e => setDateFrom(e.target.value)} 
-                      className="bg-black border border-primary/30 text-white text-xs px-3 py-2 rounded-sm focus:outline-none focus:border-primary transition-colors group-hover:border-primary/60 font-mono cursor-pointer" 
+                    <input
+                      id="analytics-date-from"
+                      name="dateFrom"
+                      type="date"
+                      value={dateFrom}
+                      onChange={e => setDateFrom(e.target.value)}
+                      className="bg-black border border-primary/30 text-white text-xs px-3 py-2 rounded-sm focus:outline-none focus:border-primary transition-colors group-hover:border-primary/60 font-mono cursor-pointer"
                     />
                     <Calendar className="absolute right-2 top-2.5 w-3 h-3 text-primary/40 pointer-events-none" />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[9px] uppercase tracking-widest text-muted-foreground font-mono px-1">Até</label>
+                  <label htmlFor="analytics-date-to" className="text-[9px] uppercase tracking-widest text-muted-foreground font-mono px-1">Até</label>
                   <div className="relative group">
-                    <input 
-                      type="date" 
-                      value={dateTo} 
-                      onChange={e => setDateTo(e.target.value)} 
-                      className="bg-black border border-primary/30 text-white text-xs px-3 py-2 rounded-sm focus:outline-none focus:border-primary transition-colors group-hover:border-primary/60 font-mono cursor-pointer" 
+                    <input
+                      id="analytics-date-to"
+                      name="dateTo"
+                      type="date"
+                      value={dateTo}
+                      onChange={e => setDateTo(e.target.value)}
+                      className="bg-black border border-primary/30 text-white text-xs px-3 py-2 rounded-sm focus:outline-none focus:border-primary transition-colors group-hover:border-primary/60 font-mono cursor-pointer"
                     />
                     <Calendar className="absolute right-2 top-2.5 w-3 h-3 text-primary/40 pointer-events-none" />
                   </div>
                 </div>
 
-                <button className="mt-auto flex items-center gap-2 h-[34px] px-4 bg-transparent border border-white/20 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-white/5 hover:border-white/40 transition-all rounded-sm active:scale-95 cursor-pointer">
+                <button
+                  onClick={handleExportCSV}
+                  className="mt-auto flex items-center gap-2 h-[34px] px-4 bg-transparent border border-white/20 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-white/5 hover:border-white/40 transition-all rounded-sm active:scale-95 cursor-pointer"
+                >
                   <Download className="w-3.5 h-3.5" />
                   <span>Exportar CSV</span>
                 </button>
@@ -134,15 +185,40 @@ export const AnalyticsExplorer = ({ activeTab, onTab, children }) => {
                   <HistoryIcon className="w-4 h-4 text-primary" />
                   <h2 className="text-sm font-bold text-white tracking-widest uppercase">Log de Eventos</h2>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-sm border border-white/5">
-                  <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                  <input 
-                    type="text" 
-                    placeholder="FILTRAR EVENTOS..." 
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                    className="bg-transparent border-none text-[10px] text-white uppercase tracking-widest font-mono focus:outline-none w-32 placeholder:text-muted-foreground/60" 
-                  />
+                <div className="flex items-center gap-4">
+                  <div className="relative flex items-center bg-white/5 px-3 py-1.5 rounded-sm border border-white/5 gap-2">
+                    <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+                    <select
+                      id="analytics-instrument-filter"
+                      name="instrumentFilter"
+                      aria-label="Filtrar por Instrumento"
+                      value={selectedInstrument}
+                      onChange={e => setSelectedInstrument(e.target.value)}
+                      className="bg-transparent border-none text-[10px] text-white uppercase tracking-widest font-mono focus:outline-none cursor-pointer appearance-none pr-6 font-bold"
+                      style={{ colorScheme: 'dark' }}
+                    >
+                      <option value="ALL" className="bg-[#121212] text-white">TODOS INSTS</option>
+                      <option value="TIC-101" className="bg-[#121212] text-white">TIC-101</option>
+                      <option value="FIT-202" className="bg-[#121212] text-white">FIT-202</option>
+                      <option value="OUT-101" className="bg-[#121212] text-white">OUT-101</option>
+                      <option value="PLC-MOD-1" className="bg-[#121212] text-white">PLC-MOD-1</option>
+                    </select>
+                    <ChevronDown className="absolute right-2 top-2.5 w-3 h-3 text-muted-foreground pointer-events-none" />
+                  </div>
+
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-sm border border-white/5">
+                    <label htmlFor="analytics-search-filter" style={srOnlyStyle}>Filtrar Eventos</label>
+                    <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      id="analytics-search-filter"
+                      name="searchFilter"
+                      type="text"
+                      placeholder="FILTRAR EVENTOS..."
+                      value={filterText}
+                      onChange={e => setFilterText(e.target.value)}
+                      className="bg-transparent border-none text-[10px] text-white uppercase tracking-widest font-mono focus:outline-none w-32 placeholder:text-muted-foreground/60"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -164,11 +240,11 @@ export const AnalyticsExplorer = ({ activeTab, onTab, children }) => {
                         </td>
                         <td className="py-4 px-4 text-[11px]">
                           <span className={cn(
-                            "px-2 py-0.5 rounded-sm text-[9px] uppercase font-bold", 
-                            log.type.includes('Alarme') 
-                              ? "bg-destructive/20 text-destructive border border-destructive/30" 
-                              : log.type.includes('Mudança') 
-                                ? "bg-accent/20 text-accent border border-accent/30" 
+                            "px-2 py-0.5 rounded-sm text-[9px] uppercase font-bold",
+                            log.type.includes('Alarme')
+                              ? "bg-destructive/20 text-destructive border border-destructive/30"
+                              : log.type.includes('Mudança')
+                                ? "bg-accent/20 text-accent border border-accent/30"
                                 : "bg-white/10 text-white/70 border border-white/10"
                           )}>
                             {log.type}
