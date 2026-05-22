@@ -571,6 +571,9 @@ function ConfigurationPage({ instruments, params, onChangeParams, isMobile }) {
   const inst       = instruments.find(i => i.id === selectedId);
   const instParams = localParams[selectedId] || [];
   const categories = ["all", ...new Set(instParams.map(p => p.category))];
+
+  useEffect(() => { setActiveCategory("all"); }, [selectedId]);
+
   const filtered   = activeCategory === "all" ? instParams : instParams.filter(p => p.category === activeCategory);
   const catLabel   = { all: "Todos", process: "Processo", config: "Config.", calibration: "Calibração", alarm: "Alarmes" };
 
