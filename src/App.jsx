@@ -275,6 +275,7 @@ const NAV_TABS = [
   { id: "templates",     icon: "☰", label: "Templates"  },
   { id: "datalog",       icon: "▶", label: "Registro"   },
   { id: "reports",       icon: "📊", label: "Relatórios" },
+  { id: "portus",        icon: "⎋", label: "PORTUS"     },
 ];
 
 function BottomNav({ activeTab, onTab }) {
