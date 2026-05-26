@@ -26,7 +26,7 @@ const FloatingParameterChip = ({
       delay,
       ease: "easeInOut"
     }}
-    className={cn("absolute pointer-events-none flex flex-col items-start px-3 py-1.5 glass-panel border-primary/20", className)}
+    className={cn("hidden sm:flex absolute pointer-events-none flex-col items-start px-3 py-1.5 glass-panel border-primary/20", className)}
   >
     <span className="text-[8px] mono text-primary/60 uppercase tracking-widest">{label}</span>
     <span className="text-xs font-bold mono text-primary">{value}</span>
@@ -88,7 +88,7 @@ export const HeroLanding = ({ onEnter }) => {
         />
       ))}
 
-      <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-screen text-center">
+      <main className="relative z-10 pt-20 pb-16 md:pt-32 md:pb-20 px-5 md:px-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-screen text-center">
         {/* Main Heading Group */}
         <div className="relative group max-w-5xl mx-auto">
           <motion.div
@@ -96,7 +96,7 @@ export const HeroLanding = ({ onEnter }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black font-heading leading-[1.05] tracking-tighter mb-8 flex flex-col items-center">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black font-heading leading-[1.05] tracking-tighter mb-6 md:mb-8 flex flex-col items-center">
               <span className="text-gray-500/80">O futuro do</span>
               <span className="flex items-center gap-3 md:gap-5">
                 <motion.span
@@ -167,7 +167,7 @@ export const HeroLanding = ({ onEnter }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="mt-16 flex items-center gap-8 text-[10px] mono text-gray-600 uppercase tracking-widest"
+          className="mt-10 md:mt-16 flex items-center gap-4 md:gap-8 text-[10px] mono text-gray-600 uppercase tracking-widest flex-wrap justify-center"
         >
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
