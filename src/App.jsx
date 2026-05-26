@@ -283,6 +283,7 @@ function BottomNav({ activeTab, onTab }) {
       display: "flex", overflowX: "auto", background: "#0c0c0e",
       borderTop: "1px solid rgba(255, 255, 255, 0.08)", flexShrink: 0,
       scrollbarWidth: "none", WebkitOverflowScrolling: "touch",
+      paddingBottom: "env(safe-area-inset-bottom, 0px)",
     }}>
       {NAV_TABS.map(t => {
         const isActive = activeTab === t.id;
@@ -314,14 +315,14 @@ function StatusBar({ instruments }) {
   const offline = instruments.filter(i => i.status === "offline").length;
   const now = new Date().toLocaleString("pt-BR");
   return (
-    <div style={{ background: "#060608", color: "#888", borderTop: "1px solid rgba(255, 255, 255, 0.05)", height: 22, display: "flex", alignItems: "center", padding: "0 12px", fontSize: 9, gap: 12, justifyContent: "space-between", flexShrink: 0, fontFamily: "monospace" }}>
-      <div style={{ display: "flex", gap: 12 }}>
-        <span>SYS STATUS: <span style={{ color: "#00ff9d", fontWeight: "bold" }}>OPERACIONAL</span></span>
-        <span style={{ color: "#00ff9d" }}>● {online} ON</span>
-        <span style={{ color: "#ffe500" }}>▲ {warning} WARN</span>
-        <span style={{ color: "#ef4444" }}>✖ {offline} OFF</span>
+    <div style={{ background: "#060608", color: "#888", borderTop: "1px solid rgba(255, 255, 255, 0.05)", minHeight: 22, display: "flex", alignItems: "center", padding: "2px 10px", fontSize: 9, gap: 8, justifyContent: "space-between", flexShrink: 0, fontFamily: "monospace", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <span style={{ whiteSpace: "nowrap" }}>STATUS: <span style={{ color: "#00ff9d", fontWeight: "bold" }}>OPER.</span></span>
+        <span style={{ color: "#00ff9d", whiteSpace: "nowrap" }}>● {online} ON</span>
+        <span style={{ color: "#ffe500", whiteSpace: "nowrap" }}>▲ {warning} WARN</span>
+        <span style={{ color: "#ef4444", whiteSpace: "nowrap" }}>✖ {offline} OFF</span>
       </div>
-      <span>{now}</span>
+      <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "45%" }}>{now}</span>
     </div>
   );
 }
@@ -382,8 +383,9 @@ function Dashboard({ instruments, params, chartData, selectedId, onSelect, isMob
             </div>
             
             {/* Controlador de Simulação */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255, 255, 255, 0.02)", padding: "4px 8px", borderRadius: 4, border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-              <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase", fontFamily: "monospace", marginRight: 4 }}>Simulação:</span>
+            <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? 4 : 6, background: "rgba(255, 255, 255, 0.02)", padding: "4px 8px", borderRadius: 4, border: "1px solid rgba(255, 255, 255, 0.06)" }}>
+              <span style={{ fontSize: 9, color: "#888", textTransform: "uppercase", fontFamily: "monospace" }}>Simulação:</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {["normal", "noisy", "alarm", "offline"].map(mode => {
                 const isActive = simulationMode === mode;
                 let modeColor = "#888";
@@ -415,6 +417,7 @@ function Dashboard({ instruments, params, chartData, selectedId, onSelect, isMob
                   </button>
                 );
               })}
+              </div>
             </div>
           </div>
 

@@ -34,7 +34,7 @@ const wave2Path = 'M0,80 C200,30 400,130 600,80 C800,30 1000,130 1200,80 C1400,3
 const wave3Path = 'M0,40 C150,5 300,75 450,40 C600,5 750,75 900,40 C1050,5 1200,75 1350,40 C1500,5 1650,75 1800,40 C1950,5 2100,75 2250,40 C2400,5 2550,75 2700,40 C2850,5 2880,40 2880,40 L2880,900 L0,900 Z';
 
 const LeftPanel = () => (
-  <div className="relative flex-[6] h-full overflow-hidden flex flex-col" style={{ background: '#020a06' }}>
+  <div className="relative flex-[6] h-full overflow-hidden hidden sm:flex flex-col" style={{ background: '#020a06' }}>
     <style>{WAVE_KEYFRAMES}</style>
 
     {/* Radial gradient blooms */}
@@ -152,7 +152,7 @@ const RightPanel = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex-[4] h-full flex flex-col justify-center" style={{ background: '#000000', padding: '0 48px' }}>
+    <div className="flex-1 sm:flex-[4] h-full flex flex-col justify-center" style={{ background: '#000000', padding: '0 clamp(20px, 6vw, 48px)' }}>
       <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: 'easeOut' }} className="w-full max-w-sm mx-auto">
         {/* Label */}
         <p className="text-[10px] uppercase tracking-[0.25em] mb-3" style={{ color: '#4a5050', fontFamily: 'monospace' }}>
