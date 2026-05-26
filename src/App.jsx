@@ -5,6 +5,7 @@ import {
 import { KairosLogin } from "./KairosLogin";
 import { HeroLanding } from "./HeroLanding";
 import { AnalyticsExplorer } from "./AnalyticsExplorer";
+import { PortusPage } from "./PortusPage";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const INSTRUMENTS = [
@@ -1267,6 +1268,7 @@ export default function KairOSConnect() {
     templates:     <TemplatesPage {...sharedProps} params={params} />,
     datalog:       <DataLogPage {...sharedProps} instruments={instruments} params={params} events={events} />,
     reports:       <ReportsPage {...sharedProps} instruments={instruments} params={params} chartData={chartData} />,
+    portus:        <PortusPage />,
   };
 
   if (currentScreen === "hero") {

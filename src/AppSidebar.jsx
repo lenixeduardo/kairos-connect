@@ -1,4 +1,4 @@
-import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List } from 'lucide-react';
+import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List, Usb } from 'lucide-react';
 
 const SidebarItem = ({
   icon,
@@ -43,6 +43,7 @@ export const AppSidebar = ({
   if (activeTab === 'calibration') activeLabel = 'Calibration';
   if (activeTab === 'templates') activeLabel = 'Templates';
   if (activeTab === 'reports') activeLabel = 'Reports';
+  if (activeTab === 'portus') activeLabel = 'Portus';
 
   return (
     <aside className="w-64 h-screen bg-surface border-r border-white/5 flex flex-col glass-panel sticky top-0 shrink-0">
@@ -120,6 +121,16 @@ export const AppSidebar = ({
           label="Templates"
           active={activeLabel === 'Templates'}
           onClick={() => onTab?.('templates')}
+        />
+
+        <div className="mt-8 px-4 mb-2 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+          Ecossistema
+        </div>
+        <SidebarItem
+          icon={<Usb size={20} />}
+          label="PORTUS"
+          active={activeLabel === 'Portus'}
+          onClick={() => onTab?.('portus')}
         />
       </nav>
 
