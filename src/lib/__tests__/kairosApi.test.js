@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock config
-vi.mock('../config.js', () => ({
+vi.mock('../../config.js', () => ({
   KAIROS_API_URL: 'https://test-api.example.com',
 }));
 
