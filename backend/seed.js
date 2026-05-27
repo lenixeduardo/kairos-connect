@@ -12,7 +12,7 @@ if (existingUsers.count > 0) {
 
 // ─── USUÁRIOS ────────────────────────────────────────────────────────────────
 const users = [
-  { email: 'admin@admin.com', password: 'admin',       name: 'Admin',        role: 'admin' },
+  { email: 'admin@admin.com', password: 'admin1',      name: 'Admin',        role: 'admin' },
   { email: 'ademir@kairos.com', password: 'admin',      name: 'Ademir',       role: 'operator' },
   { email: 'operador@kairos.com', password: 'kairos123', name: 'Operador 01', role: 'operator' },
 ];
@@ -73,6 +73,8 @@ console.log(`   • ${users.length} usuários`);
 console.log(`   • ${machines.length} máquinas`);
 console.log(`   • ${workOrders.length} ordens de serviço`);
 console.log('\n📧 Credenciais:');
-console.log('   admin@admin.com / admin');
+console.log('   admin@admin.com / admin1');
 console.log('   ademir@kairos.com / admin');
 console.log('   operador@kairos.com / kairos123');
+
+process.exit(0);

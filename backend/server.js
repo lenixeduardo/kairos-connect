@@ -52,6 +52,9 @@ function authenticate(req, res, next) {
   }
 }
 
+// ─── HEALTH CHECK ────────────────────────────────────────────────────────────
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 // ─── AUTH ────────────────────────────────────────────────────────────────────
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
