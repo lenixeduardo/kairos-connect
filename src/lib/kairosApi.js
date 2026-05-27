@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_KAIROS_API_URL;
+import { KAIROS_API_URL } from '../config.js';
+const BASE_URL = KAIROS_API_URL;
 
 function getAccessToken() {
   return localStorage.getItem('kairos_access_token');

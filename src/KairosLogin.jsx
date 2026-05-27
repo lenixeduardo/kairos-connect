@@ -2,6 +2,7 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { KAIROS_API_URL } from './config.js';
 
 const WAVE_KEYFRAMES = `
 @keyframes waveMove1 {
@@ -113,7 +114,7 @@ const RightPanel = ({ onLogin }) => {
     setError('');
     setIsSubmitting(true);
 
-    const apiUrl = import.meta.env.VITE_KAIROS_API_URL;
+    const apiUrl = KAIROS_API_URL;
 
     // Real API authentication when backend URL is configured
     if (apiUrl) {
