@@ -50,7 +50,6 @@
     ],
     "win": {
       "target": [
-        { "target": "zip", "arch": ["x64"] },
         { "target": "nsis", "arch": ["x64"] }
       ],
       "icon": "public/icon.ico"
