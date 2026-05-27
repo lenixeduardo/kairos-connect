@@ -2,6 +2,7 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { KAIROS_API_URL } from './config.js';
 
 const WAVE_KEYFRAMES = `
 @keyframes waveMove1 {
@@ -111,12 +112,38 @@ const RightPanel = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
 
-    // Precomputed SHA-256 hashes of standard credentials to avoid plaintext compilation leaks
-    const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326"; // admin@admin.com
-    const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // admin
+    const apiUrl = KAIROS_API_URL;
 
-    // Helper to compute SHA-256 hash in browser using standard Web Crypto API
+    // Real API authentication when backend URL is configured
+    if (apiUrl) {
+      try {
+        const res = await fetch(`${apiUrl}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Credenciais inválidas');
+
+        localStorage.setItem('kairos_access_token', data.accessToken);
+        localStorage.setItem('kairos_refresh_token', data.refreshToken);
+        if (data.user) localStorage.setItem('kairos_user', JSON.stringify(data.user));
+
+        if (onLogin) onLogin(data.user);
+      } catch (err) {
+        setError(err.message || 'Erro ao conectar ao servidor KairOS.');
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    // Demo mode — no backend configured, use local credential check
+    const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326";
+    const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
     const getSHA256 = async (str) => {
       const utf8 = new TextEncoder().encode(str);
       const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
@@ -128,26 +155,30 @@ const RightPanel = ({ onLogin }) => {
       const inputEmailHash = await getSHA256(email.trim().toLowerCase());
       const inputPasswordHash = await getSHA256(password);
 
-      // Support configurable environment variables via Vite (if supplied) or fallback to SHA-256 hashes
       const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
       const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
-      const isEmailValid = envEmail ? (email.trim().toLowerCase() === envEmail.trim().toLowerCase()) : (inputEmailHash === targetEmailHash);
-      const isPasswordValid = envPassword ? (password === envPassword) : (inputPasswordHash === targetPasswordHash);
+      const isEmailValid = envEmail
+        ? email.trim().toLowerCase() === envEmail.trim().toLowerCase()
+        : inputEmailHash === targetEmailHash;
+      const isPasswordValid = envPassword
+        ? password === envPassword
+        : inputPasswordHash === targetPasswordHash;
 
       if (!isEmailValid || !isPasswordValid) {
         setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
+        setIsSubmitting(false);
         return;
       }
 
-      setIsSubmitting(true);
       setTimeout(() => {
         setIsSubmitting(false);
-        if (onLogin) onLogin();
-      }, 2000);
+        if (onLogin) onLogin(null);
+      }, 1000);
     } catch (err) {
       console.error(err);
       setError('Erro no processamento da autenticação.');
+      setIsSubmitting(false);
     }
   };
 
