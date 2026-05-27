@@ -1,4 +1,4 @@
-import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List, ClipboardList, Factory } from 'lucide-react';
+import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List, ClipboardList, Factory, Usb } from 'lucide-react';
 
 const SidebarItem = ({
   icon,
@@ -45,6 +45,7 @@ export const AppSidebar = ({
   if (activeTab === 'reports') activeLabel = 'Reports';
   if (activeTab === 'workorders') activeLabel = 'Ordens de Serviço';
   if (activeTab === 'machines') activeLabel = 'Máquinas';
+  if (activeTab === 'portus') activeLabel = 'Portus';
 
   return (
     <aside className="w-64 h-screen bg-surface border-r border-white/5 flex flex-col glass-panel sticky top-0 shrink-0">
@@ -106,6 +107,12 @@ export const AppSidebar = ({
           onClick={() => onTab?.('instruments')}
         />
         <SidebarItem
+          icon={<Usb size={20} />}
+          label="Portus"
+          active={activeLabel === 'Portus'}
+          onClick={() => onTab?.('portus')}
+        />
+        <SidebarItem
           icon={<Settings size={20} />}
           label="Config"
           active={activeLabel === 'Config'}
@@ -161,4 +168,3 @@ export const AppSidebar = ({
     </aside>
   );
 };
-
