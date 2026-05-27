@@ -3,10 +3,15 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import rateLimit from 'express-rate-limit';
 import { getDb } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3333;
+
+// Render.com (and most PaaS) sit behind a reverse proxy that injects
+// X-Forwarded-For. Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+app.set('trust proxy', 1);
 const JWT_SECRET = process.env.JWT_SECRET || 'kairos-connect-dev-secret-key';
 const JWT_EXPIRES_IN = '24h';
 const REFRESH_EXPIRES_IN_DAYS = 7;
@@ -48,7 +53,15 @@ function authenticate(req, res, next) {
 }
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
-app.post('/api/auth/login', async (req, res) => {
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
+});
+
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
