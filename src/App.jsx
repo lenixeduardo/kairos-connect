@@ -8,10 +8,10 @@ import { useIsMobile, StatusDot, Badge, Drawer, InstItem, SectionHeader, Toolbar
 const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
 const CalibrationPage = lazy(() => import("./pages/CalibrationPage.jsx"));
 const ReportsPage = lazy(() => import("./pages/ReportsPage.jsx"));
-const AnalyticsExplorer = lazy(() => import("./AnalyticsExplorer.jsx"));
-const KairosWorkOrders = lazy(() => import("./KairosWorkOrders.jsx"));
-const KairosMachines = lazy(() => import("./KairosMachines.jsx"));
-const Portus = lazy(() => import("./Portus.jsx"));
+const AnalyticsExplorer = lazy(() => import("./AnalyticsExplorer.jsx").then(m => ({ default: m.AnalyticsExplorer })));
+const KairosWorkOrders = lazy(() => import("./KairosWorkOrders.jsx").then(m => ({ default: m.KairosWorkOrders })));
+const KairosMachines = lazy(() => import("./KairosMachines.jsx").then(m => ({ default: m.KairosMachines })));
+const Portus = lazy(() => import("./Portus.jsx").then(m => ({ default: m.Portus })));
 
 function PageLoader() {
   return (
