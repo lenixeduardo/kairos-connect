@@ -102,6 +102,31 @@ const srOnlyStyle = {
   border: '0'
 };
 
+const DEMO_EMAIL_HASH = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326";
+const DEMO_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+async function getSHA256(str) {
+  const utf8 = new TextEncoder().encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function tryDemoLogin(email, password) {
+  try {
+    const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
+    const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+    const emailOk = envEmail
+      ? email.trim().toLowerCase() === envEmail.trim().toLowerCase()
+      : await getSHA256(email.trim().toLowerCase()).then(h => h === DEMO_EMAIL_HASH);
+    const passwordOk = envPassword
+      ? password === envPassword
+      : await getSHA256(password).then(h => h === DEMO_PASSWORD_HASH);
+    return emailOk && passwordOk;
+  } catch {
+    return false;
+  }
+}
+
 const RightPanel = ({ onLogin }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -132,52 +157,28 @@ const RightPanel = ({ onLogin }) => {
         if (data.user) localStorage.setItem('kairos_user', JSON.stringify(data.user));
 
         if (onLogin) onLogin(data.user);
-      } catch (err) {
-        setError(err.message || 'Erro ao conectar ao servidor KairOS.');
-      } finally {
         setIsSubmitting(false);
-      }
-      return;
-    }
-
-    // Demo mode — no backend configured, use local credential check
-    const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326";
-    const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
-
-    const getSHA256 = async (str) => {
-      const utf8 = new TextEncoder().encode(str);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    };
-
-    try {
-      const inputEmailHash = await getSHA256(email.trim().toLowerCase());
-      const inputPasswordHash = await getSHA256(password);
-
-      const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
-      const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-
-      const isEmailValid = envEmail
-        ? email.trim().toLowerCase() === envEmail.trim().toLowerCase()
-        : inputEmailHash === targetEmailHash;
-      const isPasswordValid = envPassword
-        ? password === envPassword
-        : inputPasswordHash === targetPasswordHash;
-
-      if (!isEmailValid || !isPasswordValid) {
-        setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
+        return;
+      } catch (err) {
+        // Se o backend rejeitar as credenciais (4xx/5xx ou falha de rede),
+        // tenta o login demo local como fallback antes de exibir erro.
+        const demoOk = await tryDemoLogin(email, password);
+        if (demoOk) {
+          setTimeout(() => { setIsSubmitting(false); if (onLogin) onLogin(null); }, 800);
+          return;
+        }
+        setError(err.message || 'Erro ao conectar ao servidor KairOS.');
         setIsSubmitting(false);
         return;
       }
+    }
 
-      setTimeout(() => {
-        setIsSubmitting(false);
-        if (onLogin) onLogin(null);
-      }, 1000);
-    } catch (err) {
-      console.error(err);
-      setError('Erro no processamento da autenticação.');
+    // Demo mode — sem backend configurado
+    const demoOk = await tryDemoLogin(email, password);
+    if (demoOk) {
+      setTimeout(() => { setIsSubmitting(false); if (onLogin) onLogin(null); }, 800);
+    } else {
+      setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
       setIsSubmitting(false);
     }
   };
