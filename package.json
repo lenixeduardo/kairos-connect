@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron:preview": "vite build && electron .",
-    "electron:build:win": "vite build && electron-builder --win --x64"
+    "electron:build:win": "vite build && electron-builder --win --x64 --publish never",
+    "package": "vite build && electron-builder --win --x64 --publish never"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
@@ -40,6 +41,7 @@
     "appId": "com.kairos.connect",
     "productName": "KairOS Connect",
     "copyright": "Copyright © 2025 KairOS",
+    "publish": null,
     "directories": {
       "output": "dist-electron"
     },
