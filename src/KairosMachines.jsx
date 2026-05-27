@@ -56,7 +56,15 @@ export function KairosMachines() {
         setMachines(Array.isArray(m) ? m : []);
         setMaintenanceDue(Array.isArray(due) ? due : []);
       })
-      .catch(err => setError(err.message))
+      .catch(err => {
+        // Se o backend estiver offline (ex: cold start Render), mostra aviso em vez de erro bloqueante
+        const msg = err.message || '';
+        if (msg.includes('timeout') || msg.includes('conexão') || msg.includes('network') || msg.includes('Failed to fetch')) {
+          setError('⚠ Servidor KairOS indisponível no momento. As máquinas serão exibidas quando o servidor estiver online.');
+        } else {
+          setError(msg);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 

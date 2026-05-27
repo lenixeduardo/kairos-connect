@@ -1,0 +1,28 @@
+# KairOS Connect — Uptime Monitor
+# 
+# Render.com free tier desliga o serviço após 15 minutos de inatividade.
+# Este workflow pinga o backend a cada 14 minutos para mantê-lo aquecido
+# e evitar cold starts (que podem levar 10-60s).
+#
+# Alternativa manual: https://uptimerobot.com (gratuito, 5 min de intervalo)
+
+name: Uptime Monitor (Keep Render Warm)
+
+on:
+  schedule:
+    # A cada 14 minutos — Render desliga após 15 min de inatividade
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Permite executar manualmente
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Render backend
+        run: |
+          echo "Pingando ${{ vars.RENDER_URL || 'https://maintech-backend-v8bl.onrender.com' }}..."
+          curl -s -o /dev/null -w "HTTP %{http_code} — %{time_total}s\n" \
+            "${{ vars.RENDER_URL || 'https://maintech-backend-v8bl.onrender.com' }}" \
+            --connect-timeout 30 --max-time 60
+        continue-on-error: true

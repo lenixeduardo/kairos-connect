@@ -125,11 +125,12 @@ const RightPanel = ({ onLogin }) => {
 
     const apiUrl = KAIROS_API_URL;
 
-    // Tenta autenticar no backend real com timeout de 6 segundos
+    // Tenta autenticar no backend real com timeout de 30 segundos
+    // (Render.com free tier tem cold start de 10-60s, então 30s é um compromisso)
     if (apiUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const res = await fetch(`${apiUrl}/api/auth/login`, {
           method: 'POST',
@@ -149,19 +150,33 @@ const RightPanel = ({ onLogin }) => {
         if (onLogin) onLogin(data.user);
         return;
       } catch (err) {
-        // Se for erro de credenciais reais (não timeout/rede), mostra o erro
+        // Erro de credenciais (HTTP 401, 403) — mostra o erro real
         if (err.name !== 'AbortError' && !isNetworkError(err)) {
           setError(err.message || 'Erro ao conectar ao servidor KairOS.');
           setIsSubmitting(false);
           return;
         }
-        // Timeout ou sem rede: cai no modo demo abaixo
+        // Timeout (AbortError) ou sem rede (TypeError):
+        // Informa o usuário e continua para o modo demonstração
+        if (err.name === 'AbortError') {
+          setError('⚠ O servidor KairOS não respondeu dentro do tempo limite (30s). ' +
+            'Isto pode ocorrer quando o servidor está iniciando (cold start). ' +
+            'Tente novamente ou use o modo demonstração abaixo.');
+        } else {
+          setError('⚠ Sem conexão com o servidor KairOS. ' +
+            'Tente novamente ou use o modo demonstração abaixo.');
+        }
+        setIsSubmitting(false);
+        // Continua para o modo demonstração (não dá return)
       }
     }
 
-    // Demo mode — no backend configured, use local credential check
-    const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326";
-    const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+    // Demo mode — no backend or after timeout/network failure, use local credential check
+    // Lista de usuários demo válidos (email hash + password hash)
+    const DEMO_CREDENTIALS = [
+      { emailHash: '5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326', passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' }, // admin@admin.com / admin
+      { emailHash: '3be09e540284c144e591d85dcc663272480275cb65eb63bb3a2b807e962befb8', passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' }, // ademir@kairos.com / admin
+    ];
 
     const getSHA256 = async (str) => {
       const utf8 = new TextEncoder().encode(str);
@@ -174,20 +189,35 @@ const RightPanel = ({ onLogin }) => {
       const inputEmailHash = await getSHA256(email.trim().toLowerCase());
       const inputPasswordHash = await getSHA256(password);
 
+      // Permite override via env vars (único usuário customizado)
       const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
       const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
-      const isEmailValid = envEmail
-        ? email.trim().toLowerCase() === envEmail.trim().toLowerCase()
-        : inputEmailHash === targetEmailHash;
-      const isPasswordValid = envPassword
-        ? password === envPassword
-        : inputPasswordHash === targetPasswordHash;
+      // Se env vars estiverem definidas, usa apenas elas
+      if (envEmail || envPassword) {
+        const isEmailValid = envEmail
+          ? email.trim().toLowerCase() === envEmail.trim().toLowerCase()
+          : true;
+        const isPasswordValid = envPassword
+          ? password === envPassword
+          : true;
 
-      if (!isEmailValid || !isPasswordValid) {
-        setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
-        setIsSubmitting(false);
-        return;
+        if (!isEmailValid || !isPasswordValid) {
+          setError('Credenciais inválidas.');
+          setIsSubmitting(false);
+          return;
+        }
+      } else {
+        // Verifica contra a lista de credenciais demo
+        const isValid = DEMO_CREDENTIALS.some(
+          cred => cred.emailHash === inputEmailHash && cred.passwordHash === inputPasswordHash
+        );
+
+        if (!isValid) {
+          setError('Credenciais inválidas. Usuários demo: admin@admin.com ou ademir@kairos.com (senha "admin").');
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       setTimeout(() => {

@@ -40,6 +40,29 @@ async function refreshAccessToken() {
   return data.accessToken;
 }
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: options.signal || controller.signal,
+    });
+    return res;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function isNetworkError(err) {
+  return err instanceof TypeError && (
+    err.message.includes('fetch') ||
+    err.message.includes('network') ||
+    err.message.includes('Failed to fetch') ||
+    err.message.includes('NetworkError')
+  );
+}
+
 async function request(path, options = {}) {
   if (!BASE_URL) throw new Error('VITE_KAIROS_API_URL não configurada');
 
@@ -50,7 +73,19 @@ async function request(path, options = {}) {
     ...options.headers,
   };
 
-  let res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetchWithTimeout(`${BASE_URL}${path}`, { ...options, headers }, 15000);
+  } catch (err) {
+    // Timeout ou erro de rede
+    if (err.name === 'AbortError') {
+      throw new Error('O servidor KairOS não respondeu a tempo (timeout). Verifique se o backend está ativo.');
+    }
+    if (isNetworkError(err)) {
+      throw new Error('Sem conexão com o servidor KairOS. Verifique sua conexão de rede.');
+    }
+    throw err;
+  }
 
   if (res.status === 401) {
     if (!token) {
@@ -58,10 +93,10 @@ async function request(path, options = {}) {
     }
     try {
       const newToken = await refreshAccessToken();
-      res = await fetch(`${BASE_URL}${path}`, {
+      res = await fetchWithTimeout(`${BASE_URL}${path}`, {
         ...options,
         headers: { ...headers, Authorization: `Bearer ${newToken}` },
-      });
+      }, 15000);
     } catch {
       clearKairosAuth();
       window.dispatchEvent(new Event('kairos_auth_expired'));
