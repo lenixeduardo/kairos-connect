@@ -1,26 +1,15 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import { KairosLogin } from "./KairosLogin";
 import { HeroLanding } from "./HeroLanding";
 import { clearKairosAuth } from "./lib/kairosApi";
 import { useIsMobile, StatusDot, Badge, Drawer, InstItem, SectionHeader, Toolbar, BottomNav, StatusBar, NAV_TABS, STATUS_COLOR, EVENT_COLOR } from "./components/UI.jsx";
-
-// Lazy loaded pages — each is a separate chunk loaded on demand
-const Dashboard = lazy(() => import("./pages/Dashboard.jsx"));
-const CalibrationPage = lazy(() => import("./pages/CalibrationPage.jsx"));
-const ReportsPage = lazy(() => import("./pages/ReportsPage.jsx"));
-const AnalyticsExplorer = lazy(() => import("./AnalyticsExplorer.jsx").then(m => ({ default: m.AnalyticsExplorer })));
-const KairosWorkOrders = lazy(() => import("./KairosWorkOrders.jsx").then(m => ({ default: m.KairosWorkOrders })));
-const KairosMachines = lazy(() => import("./KairosMachines.jsx").then(m => ({ default: m.KairosMachines })));
-const Portus = lazy(() => import("./Portus.jsx").then(m => ({ default: m.Portus })));
-
-function PageLoader() {
-  return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#00ff9d", fontFamily: "monospace", fontSize: 12, gap: 12 }}>
-      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#00ff9d", animation: "pulse 1s ease-in-out infinite" }} />
-      Carregando...
-    </div>
-  );
-}
+import Dashboard from "./pages/Dashboard.jsx";
+import CalibrationPage from "./pages/CalibrationPage.jsx";
+import ReportsPage from "./pages/ReportsPage.jsx";
+import { AnalyticsExplorer } from "./AnalyticsExplorer.jsx";
+import { KairosWorkOrders } from "./KairosWorkOrders.jsx";
+import { KairosMachines } from "./KairosMachines.jsx";
+import { Portus } from "./Portus.jsx";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const INSTRUMENTS = [
