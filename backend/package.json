@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "update-passwords": "node update-passwords.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",
