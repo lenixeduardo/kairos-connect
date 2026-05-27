@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push *)",
+            "timeout": 120,
+            "statusMessage": "Gerando novo instalador...",
+            "command": "cd /home/user/kairos-connect && npm run build --silent 2>/dev/null && zip -r kairos-connect-installer.zip dist/ server.js instalar-windows.bat instalar-macos.command instalar-linux.sh .env.example -x '*.DS_Store' >/dev/null 2>&1 && printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"[DEPLOY HOOK] Instalador reconstruido em /home/user/kairos-connect/kairos-connect-installer.zip — entregue imediatamente ao usuario usando SendUserFile.\"}}'  || true"
+          }
+        ]
+      }
+    ]
+  }
+}
