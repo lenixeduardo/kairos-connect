@@ -78,3 +78,5 @@ console.log('   admin@admin.com / admin1');
 console.log('   ademir@kairos.com / admin1');
 console.log('   eduardo@kairos.com / admin1');
 console.log('   operador@kairos.com / kairos123');
+
+process.exit(0);
