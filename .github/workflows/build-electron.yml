@@ -1,0 +1,31 @@
+name: Build Electron Installer (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vite + Electron installer
+        run: npm run electron:build:win
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: KairOS-Connect-Windows-Installer
+          path: dist-electron/*.exe
+          retention-days: 30
