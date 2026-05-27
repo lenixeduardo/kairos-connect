@@ -8,6 +8,7 @@ import { AnalyticsExplorer } from "./AnalyticsExplorer";
 import { KairosWorkOrders } from "./KairosWorkOrders";
 import { KairosMachines } from "./KairosMachines";
 import { clearKairosAuth } from "./lib/kairosApi";
+import { Portus } from "./Portus";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const INSTRUMENTS = [
@@ -279,6 +280,7 @@ const NAV_TABS = [
   { id: "reports",       icon: "📊", label: "Relatórios" },
   { id: "workorders",    icon: "📋", label: "OS"         },
   { id: "machines",      icon: "🏭", label: "Máquinas"   },
+  { id: "portus",        icon: "🔌", label: "Portus"     },
 ];
 
 function BottomNav({ activeTab, onTab }) {
@@ -1300,6 +1302,7 @@ export default function KairOSConnect() {
     reports:       <ReportsPage {...sharedProps} instruments={instruments} params={params} chartData={chartData} />,
     workorders:    <KairosWorkOrders />,
     machines:      <KairosMachines />,
+    portus:        <Portus />,
   };
 
   if (currentScreen === "hero") {
@@ -1405,3 +1408,5 @@ export default function KairOSConnect() {
     </div>
   );
 }
+
+
