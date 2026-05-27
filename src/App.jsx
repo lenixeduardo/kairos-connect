@@ -5,6 +5,9 @@ import {
 import { KairosLogin } from "./KairosLogin";
 import { HeroLanding } from "./HeroLanding";
 import { AnalyticsExplorer } from "./AnalyticsExplorer";
+import { KairosWorkOrders } from "./KairosWorkOrders";
+import { KairosMachines } from "./KairosMachines";
+import { clearKairosAuth } from "./lib/kairosApi";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const INSTRUMENTS = [
@@ -274,6 +277,8 @@ const NAV_TABS = [
   { id: "templates",     icon: "☰", label: "Templates"  },
   { id: "datalog",       icon: "▶", label: "Registro"   },
   { id: "reports",       icon: "📊", label: "Relatórios" },
+  { id: "workorders",    icon: "📋", label: "OS"         },
+  { id: "machines",      icon: "🏭", label: "Máquinas"   },
 ];
 
 function BottomNav({ activeTab, onTab }) {
@@ -1026,9 +1031,20 @@ export default function KairOSConnect() {
   const isMobile = useIsMobile();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("kairos_authenticated") === "true";
+      return (
+        sessionStorage.getItem("kairos_authenticated") === "true" ||
+        !!localStorage.getItem("kairos_access_token")
+      );
     }
     return false;
+  });
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem("kairos_user");
+      try { return raw ? JSON.parse(raw) : null; } catch { return null; }
+    }
+    return null;
   });
   const [currentScreen, setCurrentScreen] = useState(() => {
     if (typeof window !== "undefined") {
@@ -1064,6 +1080,18 @@ export default function KairOSConnect() {
       return () => clearTimeout(timer);
     }
   }, [currentScreen, isAuthenticated]);
+
+  // Listen for JWT expiry from kairosApi refresh failure
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setIsAuthenticated(false);
+      setCurrentUser(null);
+      setCurrentScreen("login");
+      setActiveTab("dashboard");
+    };
+    window.addEventListener("kairos_auth_expired", handleAuthExpired);
+    return () => window.removeEventListener("kairos_auth_expired", handleAuthExpired);
+  }, []);
 
   const [selectedId, setSelectedId] = useState(INSTRUMENTS[0].id);
   const [recording, setRecording]   = useState(false);
@@ -1270,6 +1298,8 @@ export default function KairOSConnect() {
     templates:     <TemplatesPage {...sharedProps} params={params} />,
     datalog:       <DataLogPage {...sharedProps} instruments={instruments} params={params} events={events} />,
     reports:       <ReportsPage {...sharedProps} instruments={instruments} params={params} chartData={chartData} />,
+    workorders:    <KairosWorkOrders />,
+    machines:      <KairosMachines />,
   };
 
   if (currentScreen === "hero") {
@@ -1279,10 +1309,15 @@ export default function KairOSConnect() {
   if (currentScreen === "login" || !isAuthenticated) {
     return (
       <KairosLogin
-        onLogin={() => {
+        onLogin={(user) => {
           setIsAuthenticated(true);
-          if (typeof window !== "undefined") {
-            sessionStorage.setItem("kairos_authenticated", "true");
+          if (user) {
+            setCurrentUser(user);
+          } else {
+            // Demo mode (no backend): keep legacy sessionStorage flag
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem("kairos_authenticated", "true");
+            }
           }
           setCurrentScreen("dashboard");
         }}
@@ -1299,6 +1334,8 @@ export default function KairOSConnect() {
         alarmCount={alarmCount}
         onLogout={() => {
           setIsAuthenticated(false);
+          setCurrentUser(null);
+          clearKairosAuth();
           if (typeof window !== "undefined") {
             sessionStorage.removeItem("kairos_authenticated");
           }
@@ -1335,6 +1372,8 @@ export default function KairOSConnect() {
             </div>
             <button onClick={() => {
               setIsAuthenticated(false);
+              setCurrentUser(null);
+              clearKairosAuth();
               if (typeof window !== "undefined") {
                 sessionStorage.removeItem("kairos_authenticated");
               }
