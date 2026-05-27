@@ -53,6 +53,9 @@ async function request(path, options = {}) {
   let res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
 
   if (res.status === 401) {
+    if (!token) {
+      throw new Error('Sem autenticação. Faça login com uma conta válida para acessar esta funcionalidade.');
+    }
     try {
       const newToken = await refreshAccessToken();
       res = await fetch(`${BASE_URL}${path}`, {
