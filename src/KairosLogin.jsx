@@ -174,8 +174,8 @@ const RightPanel = ({ onLogin }) => {
     // Demo mode — no backend or after timeout/network failure, use local credential check
     // Lista de usuários demo válidos (email hash + password hash)
     const DEMO_CREDENTIALS = [
-      { emailHash: '5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326', passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' }, // admin@admin.com / admin
-      { emailHash: '3be09e540284c144e591d85dcc663272480275cb65eb63bb3a2b807e962befb8', passwordHash: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' }, // ademir@kairos.com / admin
+      { emailHash: '5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326', passwordHash: '25f43b1486ad95a1398e3eeb3d83bc4010015fcc9bedb35b432e00298d5021f7' }, // admin@admin.com / admin1
+      { emailHash: '3be09e540284c144e591d85dcc663272480275cb65eb63bb3a2b807e962befb8', passwordHash: '25f43b1486ad95a1398e3eeb3d83bc4010015fcc9bedb35b432e00298d5021f7' }, // ademir@kairos.com / admin1
     ];
 
     const getSHA256 = async (str) => {
@@ -214,7 +214,7 @@ const RightPanel = ({ onLogin }) => {
         );
 
         if (!isValid) {
-          setError('Credenciais inválidas. Usuários demo: admin@admin.com ou ademir@kairos.com (senha "admin").');
+          setError('Credenciais inválidas. Usuários demo: admin@admin.com ou ademir@kairos.com (senha "admin1").');
           setIsSubmitting(false);
           return;
         }
