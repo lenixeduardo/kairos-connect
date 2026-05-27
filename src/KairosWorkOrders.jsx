@@ -10,8 +10,10 @@ const STATUS_STYLE = {
 
 const PRIORITY_STYLE = {
   LOW:      { text: '#888888', label: 'BAIXA'   },
+  NORMAL:   { text: '#aaaaaa', label: 'NORMAL'  },
   MEDIUM:   { text: '#00e5ff', label: 'MÉDIA'   },
   HIGH:     { text: '#ffe500', label: 'ALTA'    },
+  URGENT:   { text: '#ff9000', label: 'URGENTE' },
   CRITICAL: { text: '#ef4444', label: 'CRÍTICA' },
 };
 
@@ -89,7 +91,21 @@ export function KairosWorkOrders() {
     ])
       .then(([orders, kpiData]) => {
         setWorkOrders(Array.isArray(orders) ? orders : []);
-        setKpis(kpiData);
+        // Normalize KPI response: API returns { statusCounts, globalMttrMinutes, availability }
+        if (kpiData) {
+          const sc = kpiData.statusCounts || {};
+          const all = Array.isArray(orders) ? orders : [];
+          setKpis({
+            total: all.length,
+            pending:    sc.PENDING    ?? 0,
+            inProgress: sc.IN_PROGRESS ?? 0,
+            paused:     sc.PAUSED     ?? 0,
+            completed:  sc.COMPLETED  ?? 0,
+            avgMttr: kpiData.globalMttrMinutes != null
+              ? kpiData.globalMttrMinutes / 60
+              : undefined,
+          });
+        }
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));

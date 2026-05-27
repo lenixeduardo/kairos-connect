@@ -69,7 +69,7 @@ export function KairosMachines() {
     m.model?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const activeCount = machines.filter(m => (m.activeWorkOrdersCount ?? 0) > 0).length;
+  const activeCount = maintenanceDue.length;
 
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto', height: '100%', boxSizing: 'border-box' }}>
@@ -97,7 +97,6 @@ export function KairosMachines() {
       {!loading && !error && (
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <StatCard label="Total" value={machines.length} color="#fff" />
-          <StatCard label="Com OS Ativa" value={activeCount} color="#ffe500" />
           <StatCard label="Manutenção Vencida" value={maintenanceDue.length} color={maintenanceDue.length > 0 ? '#ff9000' : '#00ff9d'} />
         </div>
       )}
@@ -152,7 +151,7 @@ export function KairosMachines() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, fontFamily: 'monospace' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  {['Máquina', 'Setor', 'Modelo', 'Nº Série', 'Prox. Manutenção', 'OS Ativas'].map(h => (
+                  {['Máquina', 'Setor', 'Modelo', 'Código', 'Prox. Manutenção', 'Fábrica'].map(h => (
                     <th key={h} style={{
                       padding: '10px 16px', textAlign: 'left', fontSize: 10,
                       color: '#555', fontWeight: 600, textTransform: 'uppercase',
@@ -172,7 +171,6 @@ export function KairosMachines() {
                   </tr>
                 ) : filtered.map((m, i) => {
                   const isDue = dueMachineIds.has(m.id);
-                  const activeOS = m.activeWorkOrdersCount ?? 0;
                   return (
                     <tr key={m.id} style={{
                       borderBottom: '1px solid rgba(255,255,255,0.04)',
@@ -182,7 +180,7 @@ export function KairosMachines() {
                     }}>
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <ActiveOSDot count={activeOS} />
+                          <ActiveOSDot count={isDue ? 1 : 0} />
                           <div>
                             <span style={{ color: '#e0e0e0', fontWeight: 600 }}>{m.name}</span>
                             {isDue && (
@@ -203,22 +201,17 @@ export function KairosMachines() {
                         {m.model || '—'}
                       </td>
                       <td style={{ padding: '12px 16px', color: '#555', fontSize: 11, whiteSpace: 'nowrap' }}>
-                        {m.serialNumber || '—'}
+                        {m.code || '—'}
                       </td>
                       <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', fontSize: 11 }}>
                         <span style={{ color: isDue ? '#ff9000' : '#666' }}>
-                          {m.nextMaintenanceAt
-                            ? new Date(m.nextMaintenanceAt).toLocaleDateString('pt-BR')
+                          {m.nextPreventiveMaintenance
+                            ? new Date(m.nextPreventiveMaintenance).toLocaleDateString('pt-BR')
                             : '—'}
                         </span>
                       </td>
-                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                        <span style={{
-                          color: activeOS > 0 ? '#ffe500' : '#555',
-                          fontWeight: activeOS > 0 ? 700 : 400,
-                        }}>
-                          {activeOS}
-                        </span>
+                      <td style={{ padding: '12px 16px', color: '#777', whiteSpace: 'nowrap', fontSize: 11 }}>
+                        {m.factory || '—'}
                       </td>
                     </tr>
                   );
