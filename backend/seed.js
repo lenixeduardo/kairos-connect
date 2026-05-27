@@ -6,7 +6,31 @@ const db = getDb();
 // Verifica se já existem usuários
 const existingUsers = db.prepare('SELECT COUNT(*) as count FROM users').get();
 if (existingUsers.count > 0) {
-  console.log('📦 Banco já possui dados. Pulando seed.');
+  console.log('📦 Banco já possui dados. Executando atualizações e inserções incrementais de usuários...');
+  
+  const updates = [
+    { email: 'admin@admin.com',   newPassword: 'admin1' },
+    { email: 'ademir@kairos.com', newPassword: 'admin1' },
+  ];
+  for (const u of updates) {
+    const hash = await bcrypt.hash(u.newPassword, 10);
+    db.prepare('UPDATE users SET password = ? WHERE email = ?').run(hash, u.email);
+    console.log(`  ✓ Senha atualizada: ${u.email}`);
+  }
+
+  const newUsers = [
+    { email: 'eduardo@kairos.com', password: 'admin1', name: 'Eduardo', role: 'admin' },
+  ];
+  const insert = db.prepare('INSERT OR IGNORE INTO users (email, password, name, role) VALUES (?, ?, ?, ?)');
+  for (const u of newUsers) {
+    const hash = await bcrypt.hash(u.password, 10);
+    const result = insert.run(u.email, hash, u.name, u.role);
+    if (result.changes > 0) {
+      console.log(`  ✓ Novo usuário criado: ${u.email}`);
+    }
+  }
+  
+  console.log('✅ Atualizações incrementais concluídas!');
   process.exit(0);
 }
 
