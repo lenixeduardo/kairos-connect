@@ -102,15 +102,6 @@ const srOnlyStyle = {
   border: '0'
 };
 
-function isNetworkError(err) {
-  return err instanceof TypeError && (
-    err.message.includes('fetch') ||
-    err.message.includes('network') ||
-    err.message.includes('Failed to fetch') ||
-    err.message.includes('NetworkError')
-  );
-}
-
 const RightPanel = ({ onLogin }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -124,8 +115,9 @@ const RightPanel = ({ onLogin }) => {
     setIsSubmitting(true);
 
     const apiUrl = KAIROS_API_URL;
+    let backendError = null;
 
-    // Tenta autenticar no backend real com timeout de 6 segundos
+    // 1. Tenta autenticação no backend com timeout de 6s
     if (apiUrl) {
       try {
         const controller = new AbortController();
@@ -145,36 +137,29 @@ const RightPanel = ({ onLogin }) => {
         localStorage.setItem('kairos_access_token', data.accessToken);
         localStorage.setItem('kairos_refresh_token', data.refreshToken);
         if (data.user) localStorage.setItem('kairos_user', JSON.stringify(data.user));
-
         if (onLogin) onLogin(data.user);
         return;
       } catch (err) {
-        // Se for erro de credenciais reais (não timeout/rede), mostra o erro
-        if (err.name !== 'AbortError' && !isNetworkError(err)) {
-          setError(err.message || 'Erro ao conectar ao servidor KairOS.');
-          setIsSubmitting(false);
-          return;
-        }
-        // Timeout ou sem rede: cai no modo demo abaixo
+        // Guarda o erro do backend mas continua para tentar o modo demo
+        backendError = err.name === 'AbortError' ? null : (err.message || null);
       }
     }
 
-    // Demo mode — no backend configured, use local credential check
+    // 2. Modo demo — verifica credenciais locais (admin@admin.com / admin)
     const targetEmailHash = "5edfa2692bdacc5e6ee805c626c50cb44cebb065f092d9a1067d89f74dacd326";
     const targetPasswordHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
 
     const getSHA256 = async (str) => {
       const utf8 = new TextEncoder().encode(str);
       const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     };
 
     try {
-      const inputEmailHash = await getSHA256(email.trim().toLowerCase());
+      const inputEmailHash    = await getSHA256(email.trim().toLowerCase());
       const inputPasswordHash = await getSHA256(password);
 
-      const envEmail = import.meta.env.VITE_ADMIN_EMAIL;
+      const envEmail    = import.meta.env.VITE_ADMIN_EMAIL;
       const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
       const isEmailValid = envEmail
@@ -184,21 +169,23 @@ const RightPanel = ({ onLogin }) => {
         ? password === envPassword
         : inputPasswordHash === targetPasswordHash;
 
-      if (!isEmailValid || !isPasswordValid) {
-        setError('Credenciais inválidas. Use admin@admin.com e senha "admin".');
-        setIsSubmitting(false);
+      if (isEmailValid && isPasswordValid) {
+        setTimeout(() => {
+          setIsSubmitting(false);
+          if (onLogin) onLogin(null);
+        }, 600);
         return;
       }
 
-      setTimeout(() => {
-        setIsSubmitting(false);
-        if (onLogin) onLogin(null);
-      }, 1000);
+      // Nenhum método funcionou — mostra o erro mais relevante
+      setError(backendError || 'Credenciais inválidas. Use admin@admin.com e senha "admin".');
     } catch (err) {
       console.error(err);
       setError('Erro no processamento da autenticação.');
-      setIsSubmitting(false);
     }
+
+    setIsSubmitting(false);
+  };
   };
 
   return (
