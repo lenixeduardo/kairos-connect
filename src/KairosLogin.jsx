@@ -102,6 +102,15 @@ const srOnlyStyle = {
   border: '0'
 };
 
+function isNetworkError(err) {
+  return err instanceof TypeError && (
+    err.message.includes('fetch') ||
+    err.message.includes('network') ||
+    err.message.includes('Failed to fetch') ||
+    err.message.includes('NetworkError')
+  );
+}
+
 const RightPanel = ({ onLogin }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -116,14 +125,20 @@ const RightPanel = ({ onLogin }) => {
 
     const apiUrl = KAIROS_API_URL;
 
-    // Real API authentication when backend URL is configured
+    // Tenta autenticar no backend real com timeout de 6 segundos
     if (apiUrl) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+
         const res = await fetch(`${apiUrl}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email.trim(), password }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
+
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Credenciais inválidas');
 
@@ -132,12 +147,16 @@ const RightPanel = ({ onLogin }) => {
         if (data.user) localStorage.setItem('kairos_user', JSON.stringify(data.user));
 
         if (onLogin) onLogin(data.user);
+        return;
       } catch (err) {
-        setError(err.message || 'Erro ao conectar ao servidor KairOS.');
-      } finally {
-        setIsSubmitting(false);
+        // Se for erro de credenciais reais (não timeout/rede), mostra o erro
+        if (err.name !== 'AbortError' && !isNetworkError(err)) {
+          setError(err.message || 'Erro ao conectar ao servidor KairOS.');
+          setIsSubmitting(false);
+          return;
+        }
+        // Timeout ou sem rede: cai no modo demo abaixo
       }
-      return;
     }
 
     // Demo mode — no backend configured, use local credential check
