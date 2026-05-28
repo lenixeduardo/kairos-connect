@@ -27,3 +27,7 @@ dist-electron/
 # Build artifacts
 kairos-connect-installer.zip
 dist-electron/
+
+# SQLite WAL mode files (não devem ser versionados)
+*.db-shm
+*.db-wal
