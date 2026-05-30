@@ -1,23 +1,31 @@
 import { KAIROS_API_URL } from '../config.js';
 const BASE_URL = KAIROS_API_URL;
 
+function getTokenStorage() {
+  return localStorage.getItem('kairos_access_token') ? localStorage : sessionStorage;
+}
+
 function getAccessToken() {
-  return localStorage.getItem('kairos_access_token');
+  return localStorage.getItem('kairos_access_token') || sessionStorage.getItem('kairos_access_token');
 }
 
 function getRefreshToken() {
-  return localStorage.getItem('kairos_refresh_token');
+  return localStorage.getItem('kairos_refresh_token') || sessionStorage.getItem('kairos_refresh_token');
 }
 
 function saveTokens(accessToken, refreshToken) {
-  if (accessToken) localStorage.setItem('kairos_access_token', accessToken);
-  if (refreshToken) localStorage.setItem('kairos_refresh_token', refreshToken);
+  const storage = getTokenStorage();
+  if (accessToken) storage.setItem('kairos_access_token', accessToken);
+  if (refreshToken) storage.setItem('kairos_refresh_token', refreshToken);
 }
 
 export function clearKairosAuth() {
   localStorage.removeItem('kairos_access_token');
   localStorage.removeItem('kairos_refresh_token');
   localStorage.removeItem('kairos_user');
+  sessionStorage.removeItem('kairos_access_token');
+  sessionStorage.removeItem('kairos_refresh_token');
+  sessionStorage.removeItem('kairos_user');
 }
 
 async function refreshAccessToken() {
