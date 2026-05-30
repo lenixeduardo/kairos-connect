@@ -12,11 +12,30 @@ const PORT = process.env.PORT || 3333;
 // Render.com (and most PaaS) sit behind a reverse proxy that injects
 // X-Forwarded-For. Without this, express-rate-limit throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
 app.set('trust proxy', 1);
+
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('FATAL: JWT_SECRET env var must be set in production.');
+  process.exit(1);
+}
 const JWT_SECRET = process.env.JWT_SECRET || 'kairos-connect-dev-secret-key';
 const JWT_EXPIRES_IN = '24h';
 const REFRESH_EXPIRES_IN_DAYS = 7;
 
-app.use(cors({ origin: true, credentials: true }));
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : null;
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (server-to-server, curl, Postman)
+    if (!origin) return cb(null, true);
+    // In dev (no allowlist configured) reflect any origin
+    if (!ALLOWED_ORIGINS) return cb(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
@@ -64,6 +83,14 @@ const loginLimiter = rateLimit({
   message: { message: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
 });
 
+const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Muitas requisições de refresh. Tente novamente em 15 minutos.' },
+});
+
 app.post('/api/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -101,7 +128,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
   }
 });
 
-app.post('/api/auth/refresh', (req, res) => {
+app.post('/api/auth/refresh', refreshLimiter, (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
     return res.status(400).json({ message: 'Refresh token é obrigatório.' });

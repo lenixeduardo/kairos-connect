@@ -171,7 +171,7 @@ export const kairosApi = {
   },
 
   getStoredUser() {
-    const raw = localStorage.getItem('kairos_user');
+    const raw = localStorage.getItem('kairos_user') || sessionStorage.getItem('kairos_user');
     try {
       return raw ? JSON.parse(raw) : null;
     } catch {

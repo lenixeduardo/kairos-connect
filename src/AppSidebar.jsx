@@ -53,11 +53,16 @@ function ProfileSection() {
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('A foto deve ter no máximo 2 MB.');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target.result;
       setPhoto(dataUrl);
-      localStorage.setItem('kairos_profile_photo', dataUrl);
+      try { localStorage.setItem('kairos_profile_photo', dataUrl); } catch { /* quota exceeded */ }
     };
     reader.readAsDataURL(file);
   };
