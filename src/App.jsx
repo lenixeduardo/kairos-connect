@@ -441,6 +441,8 @@ export default function KairOSConnect() {
     if (typeof window !== "undefined") {
       return (
         sessionStorage.getItem("kairos_authenticated") === "true" ||
+        localStorage.getItem("kairos_authenticated") === "true" ||
+        !!sessionStorage.getItem("kairos_access_token") ||
         !!localStorage.getItem("kairos_access_token")
       );
     }
@@ -449,7 +451,7 @@ export default function KairOSConnect() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("kairos_user");
+      const raw = localStorage.getItem("kairos_user") || sessionStorage.getItem("kairos_user");
       try { return raw ? JSON.parse(raw) : null; } catch { return null; }
     }
     return null;
@@ -718,14 +720,18 @@ export default function KairOSConnect() {
   if (currentScreen === "login" || !isAuthenticated) {
     return (
       <KairosLogin
-        onLogin={(user) => {
+        onLogin={(user, rememberMe) => {
           setIsAuthenticated(true);
           if (user) {
             setCurrentUser(user);
           } else {
-            // Demo mode (no backend): keep legacy sessionStorage flag
+            // Demo mode: persist based on rememberMe flag
             if (typeof window !== "undefined") {
-              sessionStorage.setItem("kairos_authenticated", "true");
+              if (rememberMe) {
+                localStorage.setItem("kairos_authenticated", "true");
+              } else {
+                sessionStorage.setItem("kairos_authenticated", "true");
+              }
             }
           }
           setCurrentScreen("dashboard");
@@ -747,6 +753,10 @@ export default function KairOSConnect() {
           clearKairosAuth();
           if (typeof window !== "undefined") {
             sessionStorage.removeItem("kairos_authenticated");
+            localStorage.removeItem("kairos_authenticated");
+            sessionStorage.removeItem("kairos_access_token");
+            sessionStorage.removeItem("kairos_refresh_token");
+            sessionStorage.removeItem("kairos_user");
           }
           setCurrentScreen("login");
           setActiveTab("dashboard");

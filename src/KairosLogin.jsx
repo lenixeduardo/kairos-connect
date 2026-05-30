@@ -117,6 +117,7 @@ const RightPanel = ({ onLogin }) => {
   const [error, setError] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,11 +144,12 @@ const RightPanel = ({ onLogin }) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Credenciais inválidas');
 
-        localStorage.setItem('kairos_access_token', data.accessToken);
-        localStorage.setItem('kairos_refresh_token', data.refreshToken);
-        if (data.user) localStorage.setItem('kairos_user', JSON.stringify(data.user));
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem('kairos_access_token', data.accessToken);
+        storage.setItem('kairos_refresh_token', data.refreshToken);
+        if (data.user) storage.setItem('kairos_user', JSON.stringify(data.user));
 
-        if (onLogin) onLogin(data.user);
+        if (onLogin) onLogin(data.user, rememberMe);
         return;
       } catch (err) {
         // Erro de credenciais (HTTP 401, 403) — mostra o erro real
@@ -222,7 +224,7 @@ const RightPanel = ({ onLogin }) => {
 
       setTimeout(() => {
         setIsSubmitting(false);
-        if (onLogin) onLogin(null);
+        if (onLogin) onLogin(null, rememberMe);
       }, 1000);
     } catch (err) {
       console.error(err);
@@ -321,6 +323,17 @@ const RightPanel = ({ onLogin }) => {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+
+          {/* Remember Me */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={e => setRememberMe(e.target.checked)}
+              style={{ accentColor: '#00FF9D', width: 14, height: 14, cursor: 'pointer' }}
+            />
+            <span style={{ fontSize: 12, color: '#6a7070', fontFamily: 'Inter, sans-serif' }}>Lembrar-me neste dispositivo</span>
+          </label>
 
           {/* Submit */}
           <motion.button
