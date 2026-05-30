@@ -34,61 +34,177 @@ const wave1Path = 'M0,55 C180,10 360,100 540,55 C720,10 900,100 1080,55 C1260,10
 const wave2Path = 'M0,80 C200,30 400,130 600,80 C800,30 1000,130 1200,80 C1400,30 1600,130 1800,80 C2000,30 2200,130 2400,80 C2600,30 2800,80 2880,80 L2880,900 L0,900 Z';
 const wave3Path = 'M0,40 C150,5 300,75 450,40 C600,5 750,75 900,40 C1050,5 1200,75 1350,40 C1500,5 1650,75 1800,40 C1950,5 2100,75 2250,40 C2400,5 2550,75 2700,40 C2850,5 2880,40 2880,40 L2880,900 L0,900 Z';
 
-const LeftPanel = () => (
-  <div className="relative flex-[6] h-full overflow-hidden hidden sm:flex flex-col" style={{ background: '#020a06' }}>
-    <style>{WAVE_KEYFRAMES}</style>
+const TESTIMONIALS = [
+  {
+    name: 'Dr. Rafael Souza',
+    esfera: 'Direito Trabalhista',
+    text: 'Transformou completamente a gestão dos meus processos. Organização impecável e agilidade que nunca tive antes.',
+    initials: 'RS',
+    color: '#00FF9D',
+  },
+  {
+    name: 'Dra. Camila Fernandes',
+    esfera: 'Direito de Família',
+    text: 'Interface intuitiva e relatórios precisos. Indispensável no meu escritório. Recomendo a todos os colegas.',
+    initials: 'CF',
+    color: '#00E5FF',
+  },
+  {
+    name: 'Dr. Marcos Lima',
+    esfera: 'Direito Previdenciário',
+    text: 'Organiza prazos e documentos de forma impecável. Nunca mais perdi um prazo desde que comecei a usar.',
+    initials: 'ML',
+    color: '#a78bfa',
+  },
+  {
+    name: 'Dra. Beatriz Costa',
+    esfera: 'Direito Civil',
+    text: 'Suporte excepcional e sistema extremamente confiável. Aumentei minha produtividade em mais de 40%.',
+    initials: 'BC',
+    color: '#f59e0b',
+  },
+];
 
-    {/* Radial gradient blooms */}
-    <div className="absolute inset-0 pointer-events-none" style={{
-      background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,255,157,0.55) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at -10% 110%, rgba(0,229,255,0.45) 0%, transparent 65%)'
-    }} />
+const TESTIMONIAL_FADE = `
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+`;
 
-    {/* Grain texture */}
-    <div className="absolute inset-0 pointer-events-none" style={{
-      backgroundImage: `url("${noiseDataUrl}")`,
-      backgroundRepeat: 'repeat',
-      opacity: 0.18,
-      mixBlendMode: 'overlay'
-    }} />
+const LeftPanel = () => {
+  const [idx, setIdx] = React.useState(0);
+  const [visible, setVisible] = React.useState(true);
 
-    {/* Wave SVG animations */}
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Wave 1 */}
-      <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{
-        animation: 'waveMove1 14s linear infinite'
-      }} aria-hidden="true">
-        <path d={wave1Path} fill="rgba(0,255,157,0.13)" />
-      </svg>
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIdx(i => (i + 1) % TESTIMONIALS.length);
+        setVisible(true);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
-      {/* Wave 2 */}
-      <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{
-        animation: 'waveMove2 20s linear infinite'
-      }} aria-hidden="true">
-        <path d={wave2Path} fill="rgba(0,229,255,0.08)" />
-      </svg>
+  const t = TESTIMONIALS[idx];
 
-      {/* Wave 3 */}
-      <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{
-        animation: 'waveMove3 26s linear infinite'
-      }} aria-hidden="true">
-        <path d={wave3Path} fill="rgba(0,255,204,0.07)" />
-      </svg>
-    </div>
+  return (
+    <div className="relative flex-[6] h-full overflow-hidden hidden sm:flex flex-col" style={{ background: '#020a06' }}>
+      <style>{WAVE_KEYFRAMES}{TESTIMONIAL_FADE}</style>
 
-    {/* Branding — bottom-third */}
-    <div className="relative z-10 mt-auto px-14 pb-16">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-4 h-4 shrink-0" style={{ background: '#00FF9D' }} aria-hidden="true" />
-        <span className="text-white font-bold text-2xl tracking-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
-          KairOS <span className="text-[#00FF9D]">CONNECT</span>
-        </span>
+      {/* Radial gradient blooms */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,255,157,0.55) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at -10% 110%, rgba(0,229,255,0.45) 0%, transparent 65%)'
+      }} />
+
+      {/* Grain texture */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: `url("${noiseDataUrl}")`,
+        backgroundRepeat: 'repeat',
+        opacity: 0.18,
+        mixBlendMode: 'overlay'
+      }} />
+
+      {/* Wave SVG animations */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{ animation: 'waveMove1 14s linear infinite' }} aria-hidden="true">
+          <path d={wave1Path} fill="rgba(0,255,157,0.13)" />
+        </svg>
+        <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{ animation: 'waveMove2 20s linear infinite' }} aria-hidden="true">
+          <path d={wave2Path} fill="rgba(0,229,255,0.08)" />
+        </svg>
+        <svg viewBox="0 0 2880 900" preserveAspectRatio="none" className="absolute top-0 left-0 w-[200%] h-full" style={{ animation: 'waveMove3 26s linear infinite' }} aria-hidden="true">
+          <path d={wave3Path} fill="rgba(0,255,204,0.07)" />
+        </svg>
       </div>
-      <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: '#6b7a72', fontFamily: 'monospace' }}>
-        Controle Industrial em Tempo Real
-      </p>
+
+      {/* Branding — top */}
+      <div className="relative z-10 px-14 pt-14">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-4 h-4 shrink-0" style={{ background: '#00FF9D' }} aria-hidden="true" />
+          <span className="text-white font-bold text-2xl tracking-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
+            KairOS <span className="text-[#00FF9D]">CONNECT</span>
+          </span>
+        </div>
+        <p className="text-[11px] tracking-[0.2em] uppercase" style={{ color: '#6b7a72', fontFamily: 'monospace' }}>
+          Controle Industrial em Tempo Real
+        </p>
+      </div>
+
+      {/* Testimonial card — center */}
+      <div className="relative z-10 flex-1 flex items-center px-14">
+        <div
+          key={idx}
+          style={{
+            opacity: visible ? 1 : 0,
+            transition: 'opacity 0.4s ease',
+            animation: visible ? 'fadeInUp 0.4s ease forwards' : 'none',
+            width: '100%',
+          }}
+        >
+          {/* Stars */}
+          <div style={{ display: 'flex', gap: 4, marginBottom: 20 }}>
+            {[...Array(5)].map((_, i) => (
+              <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill={t.color} aria-hidden="true">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            ))}
+          </div>
+
+          {/* Quote */}
+          <blockquote style={{
+            fontSize: 15,
+            lineHeight: 1.65,
+            color: '#c8d4cc',
+            fontFamily: 'Inter, sans-serif',
+            fontStyle: 'italic',
+            marginBottom: 24,
+            borderLeft: `3px solid ${t.color}`,
+            paddingLeft: 16,
+          }}>
+            "{t.text}"
+          </blockquote>
+
+          {/* Author */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: '50%',
+              background: `${t.color}22`,
+              border: `1.5px solid ${t.color}66`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 700, color: t.color,
+              fontFamily: 'Inter, sans-serif', flexShrink: 0,
+            }}>
+              {t.initials}
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', fontFamily: 'Inter, sans-serif' }}>{t.name}</div>
+              <div style={{ fontSize: 11, color: t.color, fontFamily: 'monospace', letterSpacing: '0.08em', opacity: 0.8 }}>{t.esfera}</div>
+            </div>
+          </div>
+
+          {/* Dots indicator */}
+          <div style={{ display: 'flex', gap: 6, marginTop: 28 }}>
+            {TESTIMONIALS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setVisible(false); setTimeout(() => { setIdx(i); setVisible(true); }, 200); }}
+                style={{
+                  width: i === idx ? 20 : 6, height: 6, borderRadius: 3,
+                  background: i === idx ? t.color : 'rgba(255,255,255,0.2)',
+                  border: 'none', cursor: 'pointer', padding: 0,
+                  transition: 'all 0.3s ease',
+                }}
+                aria-label={`Avaliação ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const srOnlyStyle = {
   position: 'absolute',

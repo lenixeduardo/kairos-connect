@@ -1,4 +1,5 @@
-import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List, ClipboardList, Factory, Usb } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { LayoutDashboard, Activity, Settings, ShieldAlert, Cpu, Terminal, LogOut, ChevronRight, BarChart3, Sliders, Layout, List, ClipboardList, Factory, Usb, Camera, ChevronDown } from 'lucide-react';
 
 const SidebarItem = ({
   icon,
@@ -27,6 +28,112 @@ const SidebarItem = ({
     {active && <ChevronRight className="w-4 h-4 opacity-50" />}
   </div>
 );
+
+const ESFERAS = [
+  'Advogado(a) Geral',
+  'Direito Trabalhista',
+  'Direito Civil',
+  'Direito de Família',
+  'Direito Penal',
+  'Direito Previdenciário',
+  'Direito Tributário',
+  'Direito Empresarial',
+  'Direito Imobiliário',
+  'Direito do Consumidor',
+  'Direito Ambiental',
+  'Direito Administrativo',
+];
+
+function ProfileSection() {
+  const [photo, setPhoto] = useState(() => localStorage.getItem('kairos_profile_photo') || null);
+  const [esfera, setEsfera] = useState(() => localStorage.getItem('kairos_profile_esfera') || '');
+  const [editingEsfera, setEditingEsfera] = useState(false);
+  const fileRef = useRef(null);
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      setPhoto(dataUrl);
+      localStorage.setItem('kairos_profile_photo', dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEsferaChange = (e) => {
+    setEsfera(e.target.value);
+    localStorage.setItem('kairos_profile_esfera', e.target.value);
+    setEditingEsfera(false);
+  };
+
+  const userName = (() => {
+    try { return JSON.parse(localStorage.getItem('kairos_user') || '{}')?.name || 'Advogado(a)'; } catch { return 'Advogado(a)'; }
+  })();
+
+  return (
+    <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Avatar */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div
+          onClick={() => fileRef.current?.click()}
+          style={{
+            width: 40, height: 40, borderRadius: '50%',
+            background: photo ? 'transparent' : 'rgba(0,255,157,0.15)',
+            border: '1.5px solid rgba(0,255,157,0.4)',
+            overflow: 'hidden', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          title="Alterar foto de perfil"
+        >
+          {photo
+            ? <img src={photo} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <Camera size={16} color="#00ff9d" />
+          }
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+      </div>
+
+      {/* Info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {userName}
+        </div>
+        {editingEsfera ? (
+          <select
+            autoFocus
+            defaultValue={esfera}
+            onChange={handleEsferaChange}
+            onBlur={() => setEditingEsfera(false)}
+            style={{
+              background: '#0c0c0e', border: '1px solid rgba(0,255,157,0.4)',
+              borderRadius: 3, color: '#00ff9d', fontSize: 10, padding: '2px 4px',
+              width: '100%', marginTop: 2, cursor: 'pointer',
+            }}
+          >
+            <option value="">Selecione a esfera...</option>
+            {ESFERAS.map(e => <option key={e} value={e}>{e}</option>)}
+          </select>
+        ) : (
+          <button
+            onClick={() => setEditingEsfera(true)}
+            style={{
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              fontSize: 10, color: esfera ? '#00ff9d' : '#4a5050',
+              fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: 3,
+              marginTop: 2,
+            }}
+            title="Clique para alterar sua esfera"
+          >
+            {esfera || 'Definir esfera…'}
+            <ChevronDown size={10} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export const AppSidebar = ({
   activeTab = 'dashboard',
@@ -59,6 +166,8 @@ export const AppSidebar = ({
           <span className="text-[10px] text-primary/70 tracking-[0.2em] mono uppercase">Connect v2.4</span>
         </div>
       </div>
+
+      <ProfileSection />
 
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
@@ -164,6 +273,10 @@ export const AppSidebar = ({
           <LogOut size={14} />
           <span>EXIT SESSION</span>
         </button>
+
+        <p style={{ fontSize: 9, color: '#2a2a2a', textAlign: 'center', marginTop: 8, fontFamily: 'monospace', letterSpacing: '0.1em' }}>
+          © EduDev 2026
+        </p>
       </div>
     </aside>
   );
